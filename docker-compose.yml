@@ -1,0 +1,41 @@
+version: '3.7'
+services:
+  prisma-studio:
+    container_name: prisma-studio
+    image: timothyjmiller/prisma-studio:latest
+    restart: unless-stopped
+    environment:
+      - POSTGRES_URL=postgresql://postgres:postgres@postgres/test
+    ports:
+      - 5555:5555
+    links:
+      - "postgres=postgres"
+  postgres:
+    image: postgres:alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - '5432:5432'
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  backend:
+    build:
+      context: .
+      dockerfile: packages/backend/Dockerfile
+    volumes:
+      - ./src:/home/node/app/src
+      - ./nodemon.json:/home/node/app/nodemon.json
+    container_name: backend
+
+    links:
+      - "postgres=postgres"
+    env_file:
+      - packages/backend/src/.env
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@postgres/test
+    command: pnpm start:backend
