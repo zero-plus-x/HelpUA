@@ -5,7 +5,7 @@
   "main": "src/index.ts",
   "private": true,
   "scripts": {
-    "start": "node -r esbuild-register src/index.ts",
+    "start": "node -r esbuild-register src/prisma.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -20,8 +20,10 @@
   },
   "homepage": "https://github.com/zero-plus-x/HelpUA#readme",
   "dependencies": {
+    "@prisma/client": "^3.10.0",
     "dotenv": "^16.0.0",
-    "express": "^4.17.3"
+    "express": "^4.17.3",
+    "prisma": "^3.10.0"
   },
   "devDependencies": {
     "@types/express": "^4.17.13"
