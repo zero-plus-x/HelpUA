@@ -1,8 +1,8 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 
-import dotenv from 'dotenv';
-dotenv.config({ path: `${__dirname}/../.env` });
+// import dotenv from 'dotenv';
+// dotenv.config({ path: `${__dirname}/../.env` });
 
 import { PrismaClient } from '@prisma/client'
 
@@ -10,7 +10,6 @@ const prisma = new PrismaClient()
 
 const app = express();
 const port = 8080;
-
 
 // @TODO disconnect on shutdown or on error
 // await prisma.$disconnect()
