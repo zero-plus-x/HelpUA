@@ -1,10 +1,17 @@
-import express from "express";
+import express from 'express';
+import bodyParser from 'body-parser';
 
 const app = express();
 const port = 8080;
 
-app.get("/", (_, res) => {
-  res.send("Hello world!");
+app.use(bodyParser.urlencoded({ extended: false }));
+
+app.post('/register', (req, res) => {
+  const { user_id: userId } = req.body;
+
+  console.log(userId);
+
+  res.json(JSON.stringify(req.body));
 });
 
 app.listen(port, () => {
