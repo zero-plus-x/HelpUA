@@ -18,5 +18,11 @@
   "bugs": {
     "url": "https://github.com/zero-plus-x/HelpUA/issues"
   },
-  "homepage": "https://github.com/zero-plus-x/HelpUA#readme"
+  "homepage": "https://github.com/zero-plus-x/HelpUA#readme",
+  "dependencies": {
+    "express": "^4.17.3"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.13"
+  }
 }
