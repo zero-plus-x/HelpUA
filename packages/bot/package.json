@@ -18,5 +18,9 @@
   "bugs": {
     "url": "https://github.com/zero-plus-x/HelpUA/issues"
   },
-  "homepage": "https://github.com/zero-plus-x/HelpUA#readme"
+  "homepage": "https://github.com/zero-plus-x/HelpUA#readme",
+  "dependencies": {
+    "telegraf": "^4.7.0",
+    "dotenv": "^16.0.0"
+  }
 }
