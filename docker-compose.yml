@@ -5,7 +5,7 @@ services:
     image: timothyjmiller/prisma-studio:latest
     restart: unless-stopped
     environment:
-      - POSTGRES_URL=postgresql://postgres:postgres@postgres/test
+      - POSTGRES_URL=postgresql://postgres:postgres@postgres/dev
     ports:
       - 5555:5555
     links:
@@ -23,19 +23,18 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-  backend:
-    build:
-      context: .
-      dockerfile: packages/backend/Dockerfile
-    volumes:
-      - ./src:/home/node/app/src
-      - ./nodemon.json:/home/node/app/nodemon.json
-    container_name: backend
+  # backend:
+  #   build:
+  #     context: .
+  #     dockerfile: packages/backend/Dockerfile
+  #   volumes:
+  #     - .:/home/node/app/
+  #   container_name: backend
 
-    links:
-      - "postgres=postgres"
-    env_file:
-      - packages/backend/src/.env
-    environment:
-      - DATABASE_URL=postgresql://postgres:postgres@postgres/test
-    command: pnpm start:backend
+  #   links:
+  #     - "postgres=postgres"
+  #   env_file:
+  #     - packages/backend/src/.env
+  #   environment:
+  #     - DATABASE_URL=postgresql://postgres:postgres@postgres/test
+  #   command: pnpm dev:backend
