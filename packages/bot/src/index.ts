@@ -1,8 +1,17 @@
 import { Telegraf } from 'telegraf';
 import dotenv from 'dotenv';
+import fetch from 'node-fetch'
 
 dotenv.config({ path: `${__dirname}/../.env` });
 
+if (process.env.TELEGRAM_BOT_TOKEN == null) {
+  console.error("TELEGRAM_BOT_TOKEN env variable is not provided")
+  process.exit(1)
+}
+if (process.env.BACKEND_HOST == null) {
+  console.error("BACKEND_HOST env variable is not provided")
+  process.exit(1)
+}
 const bot = new Telegraf(process.env.TELEGRAM_BOT_TOKEN);
 
 interface ISelection {
@@ -165,6 +174,12 @@ bot.action('provide-local-information', ctx => {
   register(selection);
   ctx.reply(`provide-local-information: ${JSON.stringify(selection)}`);
 });
+
+bot.command('ping', async ctx => {
+  const result = await fetch(`${process.env.BACKEND_HOST}/ping`)
+  const text = await result.text()
+  ctx.reply(text)
+})
 
 bot.launch();
 

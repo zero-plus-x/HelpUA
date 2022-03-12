@@ -9,7 +9,7 @@ import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 
 const app = express();
-const port = 8080;
+const port = 3000;
 
 // @TODO disconnect on shutdown or on error
 // await prisma.$disconnect()
@@ -28,6 +28,10 @@ app.get('/test', async (req, res) => {
   const posts = await prisma.post.findMany()
   console.log(posts)
 });
+
+app.get('/ping', (req, res) => {
+  res.end('pong')
+})
 
 app.listen(port, () => {
   console.log(`Started at http://localhost:${port}`);
