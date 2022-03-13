@@ -99,7 +99,7 @@ jobs:
             # Run a new container from a new image
             docker run -d \
             --env TELEGRAM_BOT_TOKEN=${{ secrets.TELEGRAM_BOT_TOKEN }} \
-            --env BACKEND_HOST=$(echo $BACKEND_IMAGE_NAME):3000 \
+            --env BACKEND_HOST=http://$(echo $BACKEND_IMAGE_NAME):3000 \
             --network net \
             --restart always \
             --name $(echo $BOT_IMAGE_NAME) \
