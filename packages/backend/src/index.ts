@@ -4,9 +4,9 @@ import bodyParser from 'body-parser';
 // import dotenv from 'dotenv';
 // dotenv.config({ path: `${__dirname}/../.env` });
 
-import { PrismaClient } from '@prisma/client'
+import { PrismaClient } from '@prisma/client';
 
-const prisma = new PrismaClient()
+const prisma = new PrismaClient();
 
 const app = express();
 const port = 3000;
@@ -22,18 +22,18 @@ app.post('/register', (req, res) => {
 });
 
 app.get('/test', async (req, res) => {
-  const posts = await prisma.post.findMany()
-  console.log(posts)
+  const posts = await prisma.post.findMany();
+  console.log(posts);
 });
 
 app.get('/ping', (req, res) => {
-  res.end('pong')
-})
+  console.log('got backend ping');
+  res.end('pong');
+});
 
 app.listen(port, () => {
   console.log(`Started at http://localhost:${port}`);
 });
-
 
 // @TODO disconnect on shutdown or on error
 // await prisma.$disconnect()

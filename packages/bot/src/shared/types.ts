@@ -3,7 +3,7 @@ import { Context } from 'telegraf';
 type TSelection = {
   language: string | null;
   option: string | null;
-  type: string | null;
+  helpType: string | null;
   userId: number | null;
 };
 

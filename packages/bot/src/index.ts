@@ -3,7 +3,7 @@ import LocalSession from 'telegraf-session-local';
 import dotenv from 'dotenv';
 import { THelpUAContext } from './shared/types';
 import { askForLanguage } from './questions';
-import { initAnswerListeners } from './answers';
+import { initAnswerListeners, initialSelection } from './answers';
 import fetch from 'node-fetch';
 
 dotenv.config({ path: `${__dirname}/../.env` });
@@ -26,12 +26,7 @@ bot.use(session); // @TODO use redis session storage https://github.com/telegraf
 bot.start(ctx => {
   if (!ctx || !ctx.chat) return;
 
-  ctx.session.selection = {
-    language: null,
-    option: null,
-    userId: null,
-    type: null
-  };
+  ctx.session.selection = initialSelection;
   askForLanguage(bot, ctx.chat.id);
 });
 
@@ -43,7 +38,7 @@ bot.command('ping', async ctx => {
   ctx.reply(text);
 });
 
-bot.launch();
+bot.launch().then(() => console.log('>> Bot ready'));
 
 process.once('SIGINT', () => bot.stop('SIGINT'));
 process.once('SIGTERM', () => bot.stop('SIGTERM'));
