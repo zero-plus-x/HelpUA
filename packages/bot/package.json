@@ -20,8 +20,10 @@
   },
   "homepage": "https://github.com/zero-plus-x/HelpUA#readme",
   "dependencies": {
+    "debug": "^4.3.3",
     "dotenv": "^16.0.0",
     "node-fetch": "^3.2.3",
-    "telegraf": "^4.7.0"
+    "telegraf": "^4.7.0",
+    "telegraf-session-local": "^2.1.0"
   }
 }

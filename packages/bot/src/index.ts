@@ -1,4 +1,6 @@
 import { Telegraf } from 'telegraf';
+import LocalSession from 'telegraf-session-local'
+
 import dotenv from 'dotenv';
 import fetch from 'node-fetch'
 
@@ -13,6 +15,7 @@ if (process.env.BACKEND_HOST == null) {
   process.exit(1)
 }
 const bot = new Telegraf(process.env.TELEGRAM_BOT_TOKEN);
+bot.use(new LocalSession({ database: 'session_db.json' }).middleware()) // @TODO use redis session storage https://github.com/telegraf/telegraf-session-redis
 
 interface ISelection {
   language: string | null;
@@ -21,14 +24,15 @@ interface ISelection {
   userId: number | null;
 }
 
-const selection: ISelection = {
-  language: null,
-  option: null,
-  userId: null,
-  type: null
-};
 
 bot.start(ctx => {
+  const selection: ISelection = {
+    language: null,
+    option: null,
+    userId: null,
+    type: null
+  };
+  ctx.session.selection = selection
   bot.telegram.sendMessage(ctx.chat.id, 'Please select a language', {
     reply_markup: {
       inline_keyboard: [
@@ -42,8 +46,8 @@ bot.start(ctx => {
   });
 });
 
-function askForInfo(ctx: any) {
-  bot.telegram.sendMessage(ctx.chat.id, 'Please select an option', {
+function askForInfo(chatId: number) {
+  bot.telegram.sendMessage(chatId, 'Please select an option', {
     reply_markup: {
       inline_keyboard: [
         [
@@ -92,87 +96,97 @@ function register(data: ISelection) {
   // fetch('http://localhost:8080/register', data)
 }
 
-bot.action('english', ctx => {
-  selection.language = 'english';
-  selection.userId = ctx.update.callback_query.from.id;
 
-  askForInfo(ctx);
+bot.action('english', ctx => {
+  if (ctx.chat == null) {
+    return
+  }
+  ctx.session.selection.language = 'english'
+  ctx.session.selection.userId = ctx.update.callback_query.from.id;
+
+  askForInfo(ctx.chat.id);
 });
 
 bot.action('ukrainian', ctx => {
-  selection.language = 'ukrainian';
-  selection.userId = ctx.update.callback_query.from.id;
+  if (ctx.chat == null) {
+    return
+  }
+  ctx.session.selection.language = 'ukrainian';
+  ctx.session.selection.userId = ctx.update.callback_query.from.id;
 
-  askForInfo(ctx);
+  askForInfo(ctx.chat.id);
 });
 
 bot.action('russian', ctx => {
-  selection.language = 'russian';
-  selection.userId = ctx.update.callback_query.from.id;
+  if (ctx.chat == null) {
+    return
+  }
+  ctx.session.selection.language = 'russian';
+  ctx.session.selection.userId = ctx.update.callback_query.from.id;
 
-  askForInfo(ctx);
+  askForInfo(ctx.chat.id);
 });
 
 bot.action('need-help', ctx => {
-  selection.option = 'need-help';
+  ctx.session.selection.option = 'need-help';
 
   askForHelp(ctx);
 });
 
 bot.action('provide-help', ctx => {
-  selection.option = 'provide-help';
+  ctx.session.selection.option = 'provide-help';
 
   askToProvideHelp(ctx);
 });
 
 bot.action('urgent-care', ctx => {
-  selection.type = 'urgent-care';
-  register(selection);
-  ctx.reply(`urgent-care: ${JSON.stringify(selection)}`);
+  ctx.session.selection.type = 'urgent-care';
+  register(ctx.session.selection);
+  ctx.reply(`urgent-care: ${JSON.stringify(ctx.session.selection)}`);
 });
 
 bot.action('transportation', ctx => {
-  selection.type = 'transportation';
-  register(selection);
-  ctx.reply(`transportation: ${JSON.stringify(selection)}`);
+  ctx.session.selection.type = 'transportation';
+  register(ctx.session.selection);
+  ctx.reply(`transportation: ${JSON.stringify(ctx.session.selection)}`);
 });
 
 bot.action('local-information', ctx => {
-  selection.type = 'local-information';
-  register(selection);
-  ctx.reply(`local-information: ${JSON.stringify(selection)}`);
+  ctx.session.selection.type = 'local-information';
+  register(ctx.session.selection);
+  ctx.reply(`local-information: ${JSON.stringify(ctx.session.selection)}`);
 });
 
 bot.action('accommodation', ctx => {
-  selection.type = 'accommodation';
-  register(selection);
-  ctx.reply(`accommodation: ${JSON.stringify(selection)}`);
+  ctx.session.selection.type = 'accommodation';
+  register(ctx.session.selection);
+  ctx.reply(`accommodation: ${JSON.stringify(ctx.session.selection)}`);
 });
 
 ///
 
 bot.action('medical-help', ctx => {
-  selection.type = 'medical-help';
-  register(selection);
-  ctx.reply(`medical-help: ${JSON.stringify(selection)}`);
+  ctx.session.selection.type = 'medical-help';
+  register(ctx.session.selection);
+  ctx.reply(`medical-help: ${JSON.stringify(ctx.session.selection)}`);
 });
 
 bot.action('accommodate-people', ctx => {
-  selection.type = 'accommodate-people';
-  register(selection);
-  ctx.reply(`accommodate-people: ${JSON.stringify(selection)}`);
+  ctx.session.selection.type = 'accommodate-people';
+  register(ctx.session.selection);
+  ctx.reply(`accommodate-people: ${JSON.stringify(ctx.session.selection)}`);
 });
 
 bot.action('transport-people', ctx => {
-  selection.type = 'transport-people';
-  register(selection);
-  ctx.reply(`transport-people: ${JSON.stringify(selection)}`);
+  ctx.session.selection.type = 'transport-people';
+  register(ctx.session.selection);
+  ctx.reply(`transport-people: ${JSON.stringify(ctx.session.selection)}`);
 });
 
 bot.action('provide-local-information', ctx => {
-  selection.type = 'provide-local-information';
-  register(selection);
-  ctx.reply(`provide-local-information: ${JSON.stringify(selection)}`);
+  ctx.session.selection.type = 'provide-local-information';
+  register(ctx.session.selection);
+  ctx.reply(`provide-local-information: ${JSON.stringify(ctx.session.selection)}`);
 });
 
 bot.command('ping', async ctx => {

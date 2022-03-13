@@ -11,9 +11,6 @@ const prisma = new PrismaClient()
 const app = express();
 const port = 3000;
 
-// @TODO disconnect on shutdown or on error
-// await prisma.$disconnect()
-
 app.use(bodyParser.urlencoded({ extended: false }));
 
 app.post('/register', (req, res) => {
@@ -36,3 +33,7 @@ app.get('/ping', (req, res) => {
 app.listen(port, () => {
   console.log(`Started at http://localhost:${port}`);
 });
+
+
+// @TODO disconnect on shutdown or on error
+// await prisma.$disconnect()
