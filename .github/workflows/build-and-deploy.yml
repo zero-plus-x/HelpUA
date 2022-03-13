@@ -85,7 +85,7 @@ jobs:
 
   deploy_bot:
     runs-on: ubuntu-latest
-    needs: build_and_push_backend
+    needs: build_and_push_bot
 
     steps:
       - name: Login to GitHub Container Registry
