@@ -1,13 +1,13 @@
-import { Telegraf } from 'telegraf';
+import { Context, Telegraf } from 'telegraf';
 
 const askForLanguage = (bot: Telegraf, chatId: number) => {
   bot.telegram.sendMessage(chatId, 'Please select a language', {
     reply_markup: {
       inline_keyboard: [
         [
-          { text: 'English', callback_data: 'english' },
-          { text: 'Ukrainian', callback_data: 'ukrainian' },
-          { text: 'Russian', callback_data: 'russian' }
+          { text: 'English', callback_data: 'language:english' },
+          { text: 'Ukrainian', callback_data: 'language:ukrainian' },
+          { text: 'Russian', callback_data: 'language:russian' }
         ]
       ]
     }
@@ -19,8 +19,8 @@ const askForInfo = (bot: Telegraf, chatId: number) => {
     reply_markup: {
       inline_keyboard: [
         [
-          { text: 'I need help', callback_data: 'need-help' },
-          { text: 'I can provide help', callback_data: 'provide-help' }
+          { text: 'I need help', callback_data: 'option:need-help' },
+          { text: 'I can provide help', callback_data: 'option:provide-help' }
         ]
       ]
     }
@@ -32,10 +32,10 @@ const askForHelp = (bot: Telegraf, chatId: number) => {
     reply_markup: {
       inline_keyboard: [
         [
-          { text: 'Urgent care', callback_data: 'urgent-care' },
-          { text: 'Transportation', callback_data: 'transportation' },
-          { text: 'Local information', callback_data: 'local-information' },
-          { text: 'Accommodation', callback_data: 'accommodation' }
+          { text: 'Urgent care', callback_data: 'help-type:urgent-care' },
+          { text: 'Transportation', callback_data: 'help-type:transportation' },
+          { text: 'Local information', callback_data: 'help-type:local-information' },
+          { text: 'Accommodation', callback_data: 'help-type:accommodation' }
         ]
       ]
     }
@@ -47,14 +47,18 @@ const askToProvideHelp = (bot: Telegraf, chatId: number) => {
     reply_markup: {
       inline_keyboard: [
         [
-          { text: 'Medical help', callback_data: 'medical-help' },
-          { text: 'Accommodate people', callback_data: 'accommodate-people' },
-          { text: 'Transport people', callback_data: 'transport-people' },
-          { text: 'Provide local information', callback_data: 'provide-local-information' }
+          { text: 'Medical help', callback_data: 'help-type:medical-help' },
+          { text: 'Accommodate people', callback_data: 'help-type:accommodate-people' },
+          { text: 'Transport people', callback_data: 'help-type:transport-people' },
+          { text: 'Provide local information', callback_data: 'help-type:provide-local-information' }
         ]
       ]
     }
   });
 };
 
-export { askForLanguage, askForInfo, askForHelp, askToProvideHelp };
+const askToRestart = (ctx: Context) => {
+  ctx.reply('Cannot process response, try /start again');
+};
+
+export { askForLanguage, askForInfo, askForHelp, askToProvideHelp, askToRestart };
