@@ -1,14 +1,15 @@
 import express from 'express';
-import bodyParser from 'body-parser';
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 const port = 3000;
 
 const app = express();
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(express.json());
 
 app.post('/register', (req, res) => {
+  console.log('backend req', req);
+  console.log('backend body', req.body);
   res.json(req.body);
 });
 
