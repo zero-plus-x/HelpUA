@@ -1,3 +1,5 @@
+import { Context } from 'telegraf';
+
 type TSelection = {
   language: string | null;
   option: string | null;
@@ -5,4 +7,12 @@ type TSelection = {
   userId: number | null;
 };
 
-export { TSelection };
+type TSession = {
+  session: {
+    selection: TSelection;
+  };
+};
+
+type THelpUAContext = Context & TSession;
+
+export { TSelection, THelpUAContext };

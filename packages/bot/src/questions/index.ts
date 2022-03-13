@@ -1,6 +1,7 @@
-import { Context, Telegraf } from 'telegraf';
+import { Telegraf } from 'telegraf';
+import { THelpUAContext } from '../shared/types';
 
-const askForLanguage = (bot: Telegraf, chatId: number) => {
+const askForLanguage = (bot: Telegraf<THelpUAContext>, chatId: number) => {
   bot.telegram.sendMessage(chatId, 'Please select a language', {
     reply_markup: {
       inline_keyboard: [
@@ -14,7 +15,7 @@ const askForLanguage = (bot: Telegraf, chatId: number) => {
   });
 };
 
-const askForInfo = (bot: Telegraf, chatId: number) => {
+const askForInfo = (bot: Telegraf<THelpUAContext>, chatId: number) => {
   bot.telegram.sendMessage(chatId, 'Please select an option', {
     reply_markup: {
       inline_keyboard: [
@@ -27,7 +28,7 @@ const askForInfo = (bot: Telegraf, chatId: number) => {
   });
 };
 
-const askForHelp = (bot: Telegraf, chatId: number) => {
+const askForHelp = (bot: Telegraf<THelpUAContext>, chatId: number) => {
   bot.telegram.sendMessage(chatId, 'What do you need help with?', {
     reply_markup: {
       inline_keyboard: [
@@ -42,7 +43,7 @@ const askForHelp = (bot: Telegraf, chatId: number) => {
   });
 };
 
-const askToProvideHelp = (bot: Telegraf, chatId: number) => {
+const askToProvideHelp = (bot: Telegraf<THelpUAContext>, chatId: number) => {
   bot.telegram.sendMessage(chatId, 'What can you help with?', {
     reply_markup: {
       inline_keyboard: [
@@ -57,7 +58,7 @@ const askToProvideHelp = (bot: Telegraf, chatId: number) => {
   });
 };
 
-const askToRestart = (ctx: Context) => {
+const askToRestart = (ctx: THelpUAContext) => {
   ctx.reply('Cannot process response, try /start again');
 };
 
