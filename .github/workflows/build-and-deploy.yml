@@ -89,7 +89,7 @@ jobs:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.SSH_KEY }}
-          envs: BOT_IMAGE_NAME,REGISTRY,GITHUB_SHA
+          envs: BOT_IMAGE_NAME,REGISTRY,GITHUB_SHA,BACKEND_IMAGE_NAME
           script: |
             docker login -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }} ghcr.io
             # Stop running container
