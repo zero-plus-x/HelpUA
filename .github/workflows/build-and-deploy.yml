@@ -101,16 +101,17 @@ jobs:
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.SSH_KEY }}
           envs: IMAGE_NAME,REGISTRY,GITHUB_SHA,{{ secrets.TELEGRAM_BOT_TOKEN }}
-          script: |
-            # Stop running container
-            # docker stop $(echo $BOT_IMAGE_NAME)
-            # Remove old container
-            # docker rm $(echo $BOT_IMAGE_NAME)
-            # Run a new container from a new image
-            docker run -d \
-            --env TELEGRAM_BOT_TOKEN \
-            --env BOT_HOST=127.0.0.1:3000 \
-            --restart always \
-            --name $(echo $BOT_IMAGE_NAME) \
-            $(echo $REGISTRY)/$(echo $BOT_IMAGE_NAME):$(echo $GITHUB_SHA | head -c7)
+          script: $(echo $REGISTRY)/$(echo $BOT_IMAGE_NAME):$(echo $GITHUB_SHA | head -c7)
+          # script: |
+          #   # Stop running container
+          #   # docker stop $(echo $BOT_IMAGE_NAME)
+          #   # Remove old container
+          #   # docker rm $(echo $BOT_IMAGE_NAME)
+          #   # Run a new container from a new image
+          #   docker run -d \
+          #   --env TELEGRAM_BOT_TOKEN \
+          #   --env BOT_HOST=127.0.0.1:3000 \
+          #   --restart always \
+          #   --name $(echo $BOT_IMAGE_NAME) \
+          #   $(echo $REGISTRY)/$(echo $BOT_IMAGE_NAME):$(echo $GITHUB_SHA | head -c7)
 
