@@ -67,9 +67,9 @@ jobs:
           script: |
             docker login -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }} ghcr.io
             # Stop running container
-            # docker stop $(echo $BACKEND_IMAGE_NAME)
+            docker stop $(echo $BACKEND_IMAGE_NAME)
             # Remove old container
-            # docker rm $(echo $BACKEND_IMAGE_NAME)
+            docker rm $(echo $BACKEND_IMAGE_NAME)
             # Run a new container from a new image
             docker run -d \
             --env DATABASE_URL \
@@ -93,9 +93,9 @@ jobs:
           script: |
             docker login -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }} ghcr.io
             # Stop running container
-            # docker stop $(echo $BOT_IMAGE_NAME)
+            docker stop $(echo $BOT_IMAGE_NAME)
             # Remove old container
-            # docker rm $(echo $BOT_IMAGE_NAME)
+            docker rm $(echo $BOT_IMAGE_NAME)
             # Run a new container from a new image
             docker run -d \
             --env TELEGRAM_BOT_TOKEN \
