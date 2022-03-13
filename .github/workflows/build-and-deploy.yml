@@ -63,7 +63,7 @@ jobs:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.SSH_KEY }}
-          envs: BACKEND_IMAGE_NAME,REGISTRY,GITHUB_SHA,{{ secrets.DATABASE_URL }}
+          envs: BACKEND_IMAGE_NAME,REGISTRY,GITHUB_SHA
           script: |
             docker login -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }} ghcr.io
             # Stop running container
@@ -72,7 +72,7 @@ jobs:
             docker rm $(echo $BACKEND_IMAGE_NAME)
             # Run a new container from a new image
             docker run -d \
-            --env DATABASE_URL \
+            --env DATABASE_URL=${{ secrets.DATABASE_URL }} \
             --restart always \
             --expose 3000 \
             --name $(echo $BACKEND_IMAGE_NAME) \
@@ -89,7 +89,7 @@ jobs:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.SSH_KEY }}
-          envs: BOT_IMAGE_NAME,REGISTRY,GITHUB_SHA,{{ secrets.TELEGRAM_BOT_TOKEN }}
+          envs: BOT_IMAGE_NAME,REGISTRY,GITHUB_SHA
           script: |
             docker login -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }} ghcr.io
             # Stop running container
@@ -98,7 +98,7 @@ jobs:
             docker rm $(echo $BOT_IMAGE_NAME)
             # Run a new container from a new image
             docker run -d \
-            --env TELEGRAM_BOT_TOKEN \
+            --env TELEGRAM_BOT_TOKEN=${{ secrets.TELEGRAM_BOT_TOKEN }} \
             --env BACKEND_HOST=127.0.0.1:3000 \
             --restart always \
             --name $(echo $BOT_IMAGE_NAME) \
