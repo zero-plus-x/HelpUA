@@ -5,6 +5,7 @@ type TSelection = {
   option: string | null;
   helpType: string | null;
   userId: number | null;
+  chatId: number | null;
 };
 
 type TSession = {

@@ -19,6 +19,9 @@
     "url": "https://github.com/zero-plus-x/HelpUA/issues"
   },
   "homepage": "https://github.com/zero-plus-x/HelpUA#readme",
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
+  },
   "dependencies": {
     "@prisma/client": "^3.10.0",
     "dotenv": "^16.0.0",

@@ -14,14 +14,17 @@ model Language {
 }
 
 model Option {
-  id     Int    @id @default(autoincrement())
-  option String
-  users  User[]
+  id        Int        @id @default(autoincrement())
+  option    String
+  users     User[]
+  helpTypes HelpType[]
 }
 
 model HelpType {
   id       Int    @id @default(autoincrement())
   helpType String
+  option   Option @relation(fields: [optionId], references: [id])
+  optionId Int
   users    User[]
 }
 
