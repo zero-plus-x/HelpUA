@@ -1,5 +1,5 @@
 import { Telegraf } from 'telegraf';
-import { THelpUAContext, TSelection } from '../shared/types';
+import { IUser, THelpUAContext, TSelection } from '../shared/types';
 import { askForHelpType, askForInfo, askToRestart } from '../questions';
 import { register } from '../db';
 
@@ -49,15 +49,16 @@ const initAnswerListeners = (bot: Telegraf<THelpUAContext>) => {
     }
   });
 
-  bot.action(/help-type:(.*)/, ctx => {
+  bot.action(/help-type:(.*)/, async ctx => {
     if (!ctx || !ctx.chat) return;
 
     const helpTypeId = parseInt(ctx.match[1]);
 
     if (helpTypeId && ctx.session.selection) {
       ctx.session.selection.helpTypeId = helpTypeId;
-      register(ctx.session.selection);
-      ctx.reply(JSON.stringify(ctx.session.selection));
+      const user = (await register(ctx.session.selection)) as IUser;
+
+      ctx.reply(`Successfully registered user: ${JSON.stringify(user)}`);
     } else {
       askToRestart(ctx);
     }

@@ -31,4 +31,12 @@ interface IHelpType {
   label: string;
 }
 
-export { TSelection, THelpUAContext, ILanguage, IOption, IHelpType };
+interface IUser {
+  chatId: number;
+  telegramUserId: number;
+  uiLanguage: string;
+  option: string;
+  helpType: string;
+}
+
+export { TSelection, THelpUAContext, ILanguage, IOption, IHelpType, IUser };

@@ -1,7 +1,7 @@
 import fetch from 'node-fetch';
 import { TSelection } from '../shared/types';
 
-const register = async (data: TSelection): Promise<boolean> => {
+const register = async (data: TSelection) => {
   try {
     const res = await fetch(`${process.env.BACKEND_HOST}/register`, {
       method: 'POST',
@@ -10,15 +10,18 @@ const register = async (data: TSelection): Promise<boolean> => {
     });
 
     if (res.status === 200) {
+      const user = await res.json();
+
       console.log('Success: Registration stored:', data);
-      return true;
+
+      return user;
     } else {
       console.log(`Error: Got status ${res.status} from backend:`, data);
-      return false;
+      return null;
     }
   } catch (e) {
     console.error('Error: Cannot store registration:', data);
-    return false;
+    return null;
   }
 };
 

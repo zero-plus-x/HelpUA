@@ -28,6 +28,7 @@ bot.start(ctx => {
 
   const chatId = ctx.chat.id;
   ctx.session.selection = { ...initialSelection, chatId };
+  console.log(ctx.session.selection);
   askForLanguage(bot, chatId);
 });
 
