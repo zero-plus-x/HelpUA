@@ -249,12 +249,17 @@ const createHelpTypes = (languages: ILanguages, options: IOptions) => {
       ]
     });
   } else {
-    console.log('Invalid options passed to function');
+    throw 'Invalid options passed to function';
   }
 };
 
 (async function () {
-  const languages = await createLanguages();
-  const options = await createOptions(languages);
-  await createHelpTypes(languages, options);
+  try {
+    const languages = await createLanguages();
+    const options = await createOptions(languages);
+    await createHelpTypes(languages, options);
+  } catch (err) {
+    process.stderr.write(String(err))
+    process.exit(1)
+  }
 })();
