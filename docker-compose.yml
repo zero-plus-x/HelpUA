@@ -26,9 +26,10 @@ services:
   backend:
     build:
       context: .
-      dockerfile: packages/backend/Dockerfile
+      dockerfile: packages/backend/dev.Dockerfile
     volumes:
-      - ./packages/backend:/home/node/app/packages/backend
+      - ./packages/backend/src:/home/node/app/packages/backend/src
+      - ./packages/backend/prisma:/home/node/app/packages/backend/prisma
     ports:
       - 3000:3000
     links:
@@ -41,9 +42,9 @@ services:
   bot:
     build:
       context: .
-      dockerfile: packages/bot/Dockerfile
+      dockerfile: packages/bot/dev.Dockerfile
     volumes:
-      - ./packages/bot:/home/node/app/packages/bot
+      - ./packages/bot/src:/home/node/app/packages/bot/src
     ports:
       - 8080:8080
     links:
