@@ -106,127 +106,145 @@ const createHelpTypes = (languages: ILanguages, options: IOptions) => {
           optionId: options.english.needHelp.id,
           languageId: languages.english.id,
           helpType: 'urgent-care',
-          label: 'Urgent help - english'
+          label: 'Urgent help'
+        },
+        {
+          optionId: options.ukrainian.needHelp.id,
+          languageId: languages.ukrainian.id,
+          helpType: 'urgent-care',
+          label: 'Невідкладна допомога'
+        },
+        {
+          optionId: options.russian.needHelp.id,
+          languageId: languages.russian.id,
+          helpType: 'urgent-care',
+          label: 'Срочная помощь'
+        },
+        {
+          optionId: options.english.needHelp.id,
+          languageId: languages.english.id,
+          helpType: 'transportation',
+          label: 'Transportation'
         },
         {
           optionId: options.ukrainian.needHelp.id,
           languageId: languages.ukrainian.id,
           helpType: 'transportation',
-          label: 'Transportation - ukrainian'
+          label: 'Перевезення'
         },
         {
           optionId: options.russian.needHelp.id,
           languageId: languages.russian.id,
           helpType: 'transportation',
-          label: 'Transportation - russian'
+          label: 'Транспорт'
         },
         {
           optionId: options.english.needHelp.id,
           languageId: languages.english.id,
           helpType: 'local-information',
-          label: 'Local information - english'
+          label: 'Local information'
         },
         {
           optionId: options.ukrainian.needHelp.id,
           languageId: languages.ukrainian.id,
           helpType: 'local-information',
-          label: 'Local information - ukrainian'
+          label: 'Місцева інформація'
         },
         {
           optionId: options.russian.needHelp.id,
           languageId: languages.russian.id,
           helpType: 'local-information',
-          label: 'Local information - russian'
+          label: 'Местная информация'
         },
         {
           optionId: options.english.needHelp.id,
           languageId: languages.english.id,
           helpType: 'accommodation',
-          label: 'Accommodation - english'
+          label: 'Accommodation'
         },
         {
           optionId: options.ukrainian.needHelp.id,
           languageId: languages.ukrainian.id,
           helpType: 'accommodation',
-          label: 'Accommodation - ukrainian'
+          label: 'Проживання'
         },
         {
           optionId: options.russian.needHelp.id,
           languageId: languages.russian.id,
           helpType: 'accommodation',
-          label: 'Accommodation - russian'
+          label: 'Жилье'
         },
         {
           optionId: options.english.needHelp.id,
           languageId: languages.english.id,
           helpType: 'medical-help',
-          label: 'Medical help - english'
+          label: 'Medical help'
         },
         {
           optionId: options.ukrainian.needHelp.id,
           languageId: languages.ukrainian.id,
           helpType: 'medical-help',
-          label: 'Medical help - ukrainian'
+          label: 'Медична допомога'
         },
         {
           optionId: options.russian.needHelp.id,
           languageId: languages.russian.id,
           helpType: 'medical-help',
-          label: 'Medical help - russian'
+          label: 'Медицинская помощь'
         },
         {
           optionId: options.english.provideHelp.id,
           languageId: languages.english.id,
           helpType: 'accommodate-people',
-          label: 'Accommodate people - english'
+          label: 'Accommodate people'
         },
         {
           optionId: options.ukrainian.provideHelp.id,
           languageId: languages.ukrainian.id,
           helpType: 'accommodate-people',
-          label: 'Accommodate people - ukrainian'
+          label: 'Розмістити людей'
         },
         {
           optionId: options.russian.provideHelp.id,
           languageId: languages.russian.id,
           helpType: 'accommodate-people',
-          label: 'Accommodate people - russian'
+          label: 'Разместить людей'
         },
         {
           optionId: options.english.provideHelp.id,
           languageId: languages.english.id,
           helpType: 'transport-people',
-          label: 'Transport people - english'
+          label: 'Transport people'
         },
         {
           optionId: options.ukrainian.provideHelp.id,
           languageId: languages.ukrainian.id,
           helpType: 'transport-people',
-          label: 'Transport people - ukrainian'
+          label: 'Перевезення людей'
         },
         {
           optionId: options.russian.provideHelp.id,
           languageId: languages.russian.id,
           helpType: 'transport-people',
-          label: 'Transport people - russian'
+          label: 'Перевозить людей'
         },
         {
           optionId: options.english.provideHelp.id,
           languageId: languages.english.id,
           helpType: 'provide-local-information',
-          label: 'Provide local information - english'
+          label: 'Provide local information'
         },
         {
           optionId: options.ukrainian.provideHelp.id,
           languageId: languages.ukrainian.id,
           helpType: 'provide-local-information',
-          label: 'Provide local information - ukrainian'
+          label: 'Надайте місцеву інформацію'
         },
         {
           optionId: options.russian.provideHelp.id,
           languageId: languages.russian.id,
           helpType: 'provide-local-information',
-          label: 'Provide local information - russian'
+          label: 'Предоставить местную информацию'
         }
       ]
     });
