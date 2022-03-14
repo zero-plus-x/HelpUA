@@ -34,4 +34,17 @@ const getUILanguages = async () => {
   }
 };
 
-export { register, getUILanguages };
+const getOptions = async (uiLanguageId: number) => {
+  try {
+    const response = await fetch(`${process.env.BACKEND_HOST}/languages/${uiLanguageId}/options`);
+    const options = await response.json();
+    console.log(options);
+
+    return options;
+  } catch (e) {
+    console.error('Error: Cannot get options:', e);
+    return [];
+  }
+};
+
+export { register, getUILanguages, getOptions };

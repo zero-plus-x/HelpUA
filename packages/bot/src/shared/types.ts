@@ -16,4 +16,14 @@ type TSession = {
 
 type THelpUAContext = Context & TSession;
 
-export { TSelection, THelpUAContext };
+interface ILanguage {
+  id: number;
+  language: string;
+}
+
+interface IOption {
+  id: number;
+  label: string;
+}
+
+export { TSelection, THelpUAContext, ILanguage, IOption };

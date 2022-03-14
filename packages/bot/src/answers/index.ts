@@ -29,7 +29,7 @@ const initAnswerListeners = (bot: Telegraf<THelpUAContext>) => {
     if (uiLanguageId) {
       ctx.session.selection = withInitialSession({ selection: ctx.session.selection, options: { uiLanguageId } });
       ctx.session.selection.userId = ctx.update.callback_query.from.id;
-      askForInfo(bot, ctx.chat.id);
+      askForInfo(bot, ctx.chat.id, uiLanguageId);
     } else {
       askToRestart(ctx);
     }

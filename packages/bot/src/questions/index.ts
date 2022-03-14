@@ -1,35 +1,30 @@
 import { Telegraf } from 'telegraf';
-import { getUILanguages } from '../db';
-import { THelpUAContext } from '../shared/types';
-
-interface ILanguage {
-  id: number;
-  language: string;
-}
+import { getOptions, getUILanguages } from '../db';
+import { ILanguage, IOption, THelpUAContext } from '../shared/types';
 
 const askForLanguage = async (bot: Telegraf<THelpUAContext>, chatId: number) => {
   const uiLanguages = (await getUILanguages()) as ILanguage[];
-  const options = uiLanguages.map(language => ({
+  const rows = uiLanguages.map(language => ({
     text: language.language,
     callback_data: `ui-language:${language.id}`
   }));
 
   bot.telegram.sendMessage(chatId, 'Please select a language', {
     reply_markup: {
-      inline_keyboard: [options]
+      inline_keyboard: [rows]
     }
   });
 };
 
-const askForInfo = (bot: Telegraf<THelpUAContext>, chatId: number) => {
+const askForInfo = async (bot: Telegraf<THelpUAContext>, chatId: number, uiLanguageId: number) => {
+  const options = (await getOptions(uiLanguageId)) as IOption[];
+  const rows = options.map(option => ({
+    text: option.label,
+    callback_data: `option:${option.id}`
+  }));
   bot.telegram.sendMessage(chatId, 'Please select an option', {
     reply_markup: {
-      inline_keyboard: [
-        [
-          { text: 'I need help', callback_data: 'option:need-help' },
-          { text: 'I can provide help', callback_data: 'option:provide-help' }
-        ]
-      ]
+      inline_keyboard: [rows]
     }
   });
 };
