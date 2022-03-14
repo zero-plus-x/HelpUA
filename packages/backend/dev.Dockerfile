@@ -9,7 +9,7 @@ RUN pnpm fetch
 
 ADD . ./
 
-RUN pnpm install -r --offline --prod
+RUN pnpm install -r --offline
 
 WORKDIR /home/node/app/packages/backend
 RUN pnpm prisma generate

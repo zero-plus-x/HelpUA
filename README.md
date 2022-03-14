@@ -14,6 +14,7 @@ add bot token to .env file in packages/bot (use sample.env as a reference)
 ```
 docker-compose up
 docker exec helpua_backend_1 pnpm migrate:deploy
+docker exec helpua_backend_1 pnpm seed
 ```
 
 ## Running without Docker
