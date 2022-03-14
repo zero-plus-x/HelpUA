@@ -8,7 +8,8 @@
     "start:bot": "pnpm --filter=@help-ua/bot start",
     "dev:bot": "node-dev packages/bot/src/index.ts",
     "start:backend": "pnpm --filter=@help-ua/backend start",
-    "dev:backend": "node-dev packages/backend/src/index.ts"
+    "dev:backend": "node-dev packages/backend/src/index.ts",
+    "lint": "eslint '**/*.ts' --max-warnings 0"
   },
   "repository": {
     "type": "git",
@@ -24,6 +25,7 @@
   "dependencies": {
     "esbuild": "^0.14.25",
     "esbuild-register": "^3.3.2",
+    "eslint": "^8.11.0",
     "node-dev": "^7.2.0",
     "prettier": "^2.5.1",
     "typescript": "^4.6.2"
