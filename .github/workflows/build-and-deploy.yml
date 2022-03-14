@@ -98,7 +98,7 @@ jobs:
 
   deploy_bot:
     runs-on: ubuntu-latest
-    needs: build_and_push_bot
+    needs: [build_and_push_bot, deploy_backend]
 
     steps:
       - name: Deploy to Digital Ocean droplet via SSH action
