@@ -65,11 +65,6 @@ jobs:
           envs: BACKEND_IMAGE_NAME,REGISTRY,GITHUB_SHA
           script: |
             docker login -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }} ghcr.io
-            # Stop running container
-            docker stop $(echo $BACKEND_IMAGE_NAME)
-            # Remove old container
-            docker rm $(echo $BACKEND_IMAGE_NAME)
-            # Run a new container from a new image
             docker run \
             --env DATABASE_URL=${{ secrets.DATABASE_URL }} \
             --name $(echo $BACKEND_IMAGE_NAME)-migrate \
