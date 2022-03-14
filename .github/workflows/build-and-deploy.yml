@@ -67,7 +67,6 @@ jobs:
             echo ${{ secrets.GITHUB_TOKEN }} | docker login -u ${{ github.actor }} --password-stdin ghcr.io
             docker run \
             --env DATABASE_URL=${{ secrets.DATABASE_URL }} \
-            --name $(echo $BACKEND_IMAGE_NAME)-migrate \
             $(echo $REGISTRY)/$(echo $BACKEND_IMAGE_NAME):$(echo $GITHUB_SHA | head -c7) \
             pnpm migrate:deploy
 
