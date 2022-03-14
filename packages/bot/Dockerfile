@@ -1,14 +1,13 @@
-# alpine doesn't work on apple silicon
-FROM node:14
+FROM node:14-alpine
 RUN npm i -g pnpm
 
 WORKDIR /home/node/app
 COPY ./pnpm-lock.yaml ./
-RUN pnpm fetch
+COPY ./package.json ./
+COPY ./packages/bot/package.json ./packages/bot/package.json
 
+RUN pnpm install -r --prod
 
-ADD . ./
-
-RUN pnpm install -r --offline --prod
+COPY ./packages/bot/src ./packages/bot/src
 
 CMD ["pnpm", "start:bot"]

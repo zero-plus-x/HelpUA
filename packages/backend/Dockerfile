@@ -1,15 +1,15 @@
-# alpine doesn't work on apple silicon
-FROM node:14
+FROM node:14-alpine
 RUN npm i -g pnpm
 
 WORKDIR /home/node/app
 COPY ./pnpm-lock.yaml ./
-RUN pnpm fetch
-
-
-ADD . ./
+COPY ./package.json ./
+COPY ./packages/backend/package.json ./packages/backend/package.json
 
 RUN pnpm install -r --offline --prod
+
+COPY ./packages/backend/src ./packages/backend/src
+COPY ./packages/backend/prisma ./packages/backend/prisma
 
 WORKDIR /home/node/app/packages/backend
 RUN pnpm prisma generate
