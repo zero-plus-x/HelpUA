@@ -64,7 +64,7 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           envs: BACKEND_IMAGE_NAME,REGISTRY,GITHUB_SHA
           script: |
-            ${{ secrets.GITHUB_TOKEN }} | docker login -u ${{ github.actor }} --password-stdin ghcr.io
+            echo ${{ secrets.GITHUB_TOKEN }} | docker login -u ${{ github.actor }} --password-stdin ghcr.io
             docker run \
             --env DATABASE_URL=${{ secrets.DATABASE_URL }} \
             --name $(echo $BACKEND_IMAGE_NAME)-migrate \
@@ -84,7 +84,7 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           envs: BACKEND_IMAGE_NAME,REGISTRY,GITHUB_SHA
           script: |
-            ${{ secrets.GITHUB_TOKEN }} | docker login -u ${{ github.actor }} --password-stdin ghcr.io
+            echo ${{ secrets.GITHUB_TOKEN }} | docker login -u ${{ github.actor }} --password-stdin ghcr.io
             # Stop running container
             docker stop $(echo $BACKEND_IMAGE_NAME)
             # Remove old container
@@ -110,7 +110,7 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           envs: BOT_IMAGE_NAME,REGISTRY,GITHUB_SHA,BACKEND_IMAGE_NAME
           script: |
-            ${{ secrets.GITHUB_TOKEN }} | docker login -u ${{ github.actor }} --password-stdin ghcr.io
+            echo ${{ secrets.GITHUB_TOKEN }} | docker login -u ${{ github.actor }} --password-stdin ghcr.io
             # Stop running container
             docker stop $(echo $BOT_IMAGE_NAME)
             # Remove old container
