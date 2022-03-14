@@ -60,4 +60,24 @@ const getOptionsByLanguageId = (prisma: PrismaClient, languageId: number) => {
   });
 };
 
-export { findLanguage, findOption, findHelpType, getUILanguages, getOptionsByLanguageId };
+const getHelpTypesByLanguageIdAndOptionId = (prisma: PrismaClient, languageId: number, optionId: number) => {
+  return prisma.helpType.findMany({
+    where: {
+      languageId,
+      optionId
+    },
+    select: {
+      id: true,
+      label: true
+    }
+  });
+};
+
+export {
+  findLanguage,
+  findOption,
+  findHelpType,
+  getUILanguages,
+  getOptionsByLanguageId,
+  getHelpTypesByLanguageIdAndOptionId
+};

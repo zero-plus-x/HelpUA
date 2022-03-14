@@ -38,7 +38,6 @@ const getOptions = async (uiLanguageId: number) => {
   try {
     const response = await fetch(`${process.env.BACKEND_HOST}/languages/${uiLanguageId}/options`);
     const options = await response.json();
-    console.log(options);
 
     return options;
   } catch (e) {
@@ -47,4 +46,18 @@ const getOptions = async (uiLanguageId: number) => {
   }
 };
 
-export { register, getUILanguages, getOptions };
+const getHelpTypes = async (uiLanguageId: number, optionId: number) => {
+  try {
+    const response = await fetch(
+      `${process.env.BACKEND_HOST}/languages/${uiLanguageId}/options/${optionId}/help_types`
+    );
+    const options = await response.json();
+
+    return options;
+  } catch (e) {
+    console.error('Error: Cannot get help types:', e);
+    return [];
+  }
+};
+
+export { register, getUILanguages, getOptions, getHelpTypes };

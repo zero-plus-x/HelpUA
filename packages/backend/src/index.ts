@@ -1,12 +1,28 @@
 import express from 'express';
 import { PrismaClient } from '@prisma/client';
-import { findHelpType, findOption, getOptionsByLanguageId, getUILanguages } from './db/helpers';
+import {
+  findHelpType,
+  findOption,
+  getHelpTypesByLanguageIdAndOptionId,
+  getOptionsByLanguageId,
+  getUILanguages
+} from './db/helpers';
 
 const prisma = new PrismaClient();
 const port = 3000;
 
 const app = express();
 app.use(express.json());
+
+app.get('/ui_languages', async (_, res) => {
+  try {
+    const uiLanguages = await getUILanguages(prisma);
+
+    res.status(200).json(uiLanguages);
+  } catch (e) {
+    res.status(500).send();
+  }
+});
 
 app.get('/languages/:languageId/options', async (req, res) => {
   const languageId = parseInt(req.params.languageId);
@@ -20,11 +36,14 @@ app.get('/languages/:languageId/options', async (req, res) => {
   }
 });
 
-app.get('/ui_languages', async (_, res) => {
-  try {
-    const uiLanguages = await getUILanguages(prisma);
+app.get('/languages/:languageId/options/:optionId/help_types', async (req, res) => {
+  const languageId = parseInt(req.params.languageId);
+  const optionId = parseInt(req.params.optionId);
 
-    res.status(200).json(uiLanguages);
+  try {
+    const options = await getHelpTypesByLanguageIdAndOptionId(prisma, languageId, optionId);
+
+    res.status(200).json(options);
   } catch (e) {
     res.status(500).send();
   }

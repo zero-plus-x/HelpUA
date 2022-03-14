@@ -1,14 +1,14 @@
 import { Telegraf } from 'telegraf';
 import { THelpUAContext, TSelection } from '../shared/types';
-import { askForHelp, askForInfo, askToProvideHelp, askToRestart } from '../questions';
+import { askForHelpType, askForInfo, askToRestart } from '../questions';
 import { register } from '../db';
 
 const initialSelection: TSelection = {
   uiLanguageId: null,
   userId: null,
   chatId: null,
-  option: null,
-  helpType: null
+  optionId: null,
+  helpTypeId: null
 };
 
 interface IWithDefaultSession {
@@ -38,11 +38,12 @@ const initAnswerListeners = (bot: Telegraf<THelpUAContext>) => {
   bot.action(/option:(.*)/, ctx => {
     if (!ctx || !ctx.chat) return;
 
-    const option = ctx.match[1];
+    const uiLanguageId = ctx.session.selection.uiLanguageId as number;
+    const optionId = parseInt(ctx.match[1]);
 
-    if (option && ctx.session.selection) {
-      ctx.session.selection.option = option;
-      option === 'need-help' ? askForHelp(bot, ctx.chat.id) : askToProvideHelp(bot, ctx.chat.id);
+    if (optionId && ctx.session.selection) {
+      ctx.session.selection.optionId = optionId;
+      askForHelpType(bot, ctx.chat.id, uiLanguageId, optionId);
     } else {
       askToRestart(ctx);
     }
@@ -51,12 +52,12 @@ const initAnswerListeners = (bot: Telegraf<THelpUAContext>) => {
   bot.action(/help-type:(.*)/, ctx => {
     if (!ctx || !ctx.chat) return;
 
-    const helpType = ctx.match[1];
+    const helpTypeId = parseInt(ctx.match[1]);
 
-    if (helpType && ctx.session.selection) {
-      ctx.session.selection.helpType = helpType;
+    if (helpTypeId && ctx.session.selection) {
+      ctx.session.selection.helpTypeId = helpTypeId;
       register(ctx.session.selection);
-      ctx.reply(`${helpType}: ${JSON.stringify(ctx.session.selection)}`);
+      ctx.reply(JSON.stringify(ctx.session.selection));
     } else {
       askToRestart(ctx);
     }
