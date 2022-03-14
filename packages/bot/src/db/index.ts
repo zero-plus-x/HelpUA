@@ -24,11 +24,12 @@ const register = async (data: TSelection): Promise<boolean> => {
 
 const getUILanguages = async () => {
   try {
-    const uiLanguages = await fetch(`${process.env.BACKEND_HOST}/ui_languages`);
+    const response = await fetch(`${process.env.BACKEND_HOST}/ui_languages`);
+    const uiLanguages = await response.json();
 
     return uiLanguages;
   } catch (e) {
-    console.error('Error: Cannot get UI languages:');
+    console.error('Error: Cannot get UI languages:', e);
     return [];
   }
 };

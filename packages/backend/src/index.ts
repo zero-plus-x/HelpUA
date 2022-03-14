@@ -1,6 +1,6 @@
 import express from 'express';
 import { PrismaClient } from '@prisma/client';
-import { findHelpType, findLanguage, findOption, getUILanguages } from './db/helpers';
+import { findHelpType, findOption, getUILanguages } from './db/helpers';
 
 const prisma = new PrismaClient();
 const port = 3000;
@@ -8,7 +8,7 @@ const port = 3000;
 const app = express();
 app.use(express.json());
 
-app.get('/languages', async (_, res) => {
+app.get('/ui_languages', async (_, res) => {
   try {
     const uiLanguages = await getUILanguages(prisma);
 
@@ -19,7 +19,7 @@ app.get('/languages', async (_, res) => {
 });
 
 app.post('/register', async (req, res) => {
-  const { userId, chatId, uiLanguage, option, helpType } = req.body;
+  const { userId, chatId, uiLanguageId, option, helpType } = req.body;
 
   try {
     // @NOTE: Dev only, remove the user before storing to db, for easier testing
@@ -33,18 +33,14 @@ app.post('/register', async (req, res) => {
     // @NOTE: These records are provided as strings from the bot.
     // Fetch them from their tables by name for now,
     // until we are able to provide them to the bot and populate with name and id
-    const [languageRow, optionRow, helpTypeRow] = await Promise.all([
-      findLanguage(prisma, uiLanguage),
-      findOption(prisma, option),
-      findHelpType(prisma, helpType)
-    ]);
+    const [optionRow, helpTypeRow] = await Promise.all([findOption(prisma, option), findHelpType(prisma, helpType)]);
 
-    if (languageRow?.id && optionRow?.id && helpTypeRow?.id) {
+    if (optionRow?.id && helpTypeRow?.id) {
       const user = await prisma.user.create({
         data: {
           chatId,
           telegramUserId: userId,
-          uiLanguageId: languageRow.id,
+          uiLanguageId: uiLanguageId,
           optionId: optionRow.id,
           helpTypeId: helpTypeRow.id
         }

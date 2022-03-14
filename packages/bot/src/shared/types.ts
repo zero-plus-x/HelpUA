@@ -1,7 +1,7 @@
 import { Context } from 'telegraf';
 
 type TSelection = {
-  uiLanguage: string | null;
+  uiLanguageId: number | null;
   option: string | null;
   helpType: string | null;
   userId: number | null;

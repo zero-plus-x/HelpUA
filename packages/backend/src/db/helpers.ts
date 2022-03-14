@@ -40,6 +40,10 @@ const getUILanguages = (prisma: PrismaClient) => {
   return prisma.language.findMany({
     where: {
       showInUI: true
+    },
+    select: {
+      id: true,
+      language: true
     }
   });
 };

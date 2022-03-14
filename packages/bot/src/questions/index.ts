@@ -9,15 +9,10 @@ interface ILanguage {
 
 const askForLanguage = async (bot: Telegraf<THelpUAContext>, chatId: number) => {
   const uiLanguages = (await getUILanguages()) as ILanguage[];
-
-  const options = uiLanguages.map(language => {
-    return { text: language.label, callback_data: `ui-language:${language.id}` };
-  });
-  // [
-  //   { text: 'English', callback_data: 'ui-language:english' },
-  //   { text: 'Ukrainian', callback_data: 'ui-language:ukrainian' },
-  //   { text: 'Russian', callback_data: 'ui-language:russian' }
-  // ]
+  const options = uiLanguages.map(language => ({
+    text: language.language,
+    callback_data: `ui-language:${language.id}`
+  }));
 
   bot.telegram.sendMessage(chatId, 'Please select a language', {
     reply_markup: {
