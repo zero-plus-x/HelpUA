@@ -72,7 +72,7 @@ jobs:
 
   deploy_backend:
     runs-on: ubuntu-latest
-    needs: migrate_postgres
+    needs: migrate_postgresql
 
     steps:
       - name: Deploy to Digital Ocean droplet via SSH action
