@@ -26,8 +26,10 @@ bot.use(session); // @TODO use redis session storage https://github.com/telegraf
 bot.start(ctx => {
   if (!ctx || !ctx.chat) return;
 
-  ctx.session.selection = initialSelection;
-  askForLanguage(bot, ctx.chat.id);
+  const chatId = ctx.chat.id;
+  ctx.session.selection = { ...initialSelection, chatId };
+  console.log(ctx.session.selection);
+  askForLanguage(bot, chatId);
 });
 
 initAnswerListeners(bot);

@@ -7,6 +7,6 @@ RUN pnpm fetch
 
 ADD . ./
 
-RUN pnpm install -r --offline --prod
+RUN pnpm install -r --offline
 
 CMD ["pnpm", "dev:bot"]

@@ -1,59 +1,48 @@
 import { Telegraf } from 'telegraf';
-import { THelpUAContext } from '../shared/types';
+import { getHelpTypes, getOptions, getUILanguages } from '../db';
+import { IHelpType, ILanguage, IOption, THelpUAContext } from '../shared/types';
 
-const askForLanguage = (bot: Telegraf<THelpUAContext>, chatId: number) => {
+const askForLanguage = async (bot: Telegraf<THelpUAContext>, chatId: number) => {
+  const uiLanguages = (await getUILanguages()) as ILanguage[];
+  const rows = uiLanguages.map(language => ({
+    text: language.language,
+    callback_data: `ui-language:${language.id}`
+  }));
+
   bot.telegram.sendMessage(chatId, 'Please select a language', {
     reply_markup: {
-      inline_keyboard: [
-        [
-          { text: 'English', callback_data: 'language:english' },
-          { text: 'Ukrainian', callback_data: 'language:ukrainian' },
-          { text: 'Russian', callback_data: 'language:russian' }
-        ]
-      ]
+      inline_keyboard: [rows]
     }
   });
 };
 
-const askForInfo = (bot: Telegraf<THelpUAContext>, chatId: number) => {
+const askForInfo = async (bot: Telegraf<THelpUAContext>, chatId: number, uiLanguageId: number) => {
+  const options = (await getOptions(uiLanguageId)) as IOption[];
+  const rows = options.map(option => ({
+    text: option.label,
+    callback_data: `option:${option.id}`
+  }));
   bot.telegram.sendMessage(chatId, 'Please select an option', {
     reply_markup: {
-      inline_keyboard: [
-        [
-          { text: 'I need help', callback_data: 'option:need-help' },
-          { text: 'I can provide help', callback_data: 'option:provide-help' }
-        ]
-      ]
+      inline_keyboard: [rows]
     }
   });
 };
 
-const askForHelp = (bot: Telegraf<THelpUAContext>, chatId: number) => {
+const askForHelpType = async (
+  bot: Telegraf<THelpUAContext>,
+  chatId: number,
+  uiLanguageId: number,
+  optionId: number
+) => {
+  const helpTypes = (await getHelpTypes(uiLanguageId, optionId)) as IHelpType[];
+  const rows = helpTypes.map(helpType => ({
+    text: helpType.label,
+    callback_data: `help-type:${helpType.id}`
+  }));
   bot.telegram.sendMessage(chatId, 'What do you need help with?', {
     reply_markup: {
-      inline_keyboard: [
-        [
-          { text: 'Urgent care', callback_data: 'help-type:urgent-care' },
-          { text: 'Transportation', callback_data: 'help-type:transportation' },
-          { text: 'Local information', callback_data: 'help-type:local-information' },
-          { text: 'Accommodation', callback_data: 'help-type:accommodation' }
-        ]
-      ]
-    }
-  });
-};
-
-const askToProvideHelp = (bot: Telegraf<THelpUAContext>, chatId: number) => {
-  bot.telegram.sendMessage(chatId, 'What can you help with?', {
-    reply_markup: {
-      inline_keyboard: [
-        [
-          { text: 'Medical help', callback_data: 'help-type:medical-help' },
-          { text: 'Accommodate people', callback_data: 'help-type:accommodate-people' },
-          { text: 'Transport people', callback_data: 'help-type:transport-people' },
-          { text: 'Provide local information', callback_data: 'help-type:provide-local-information' }
-        ]
-      ]
+      inline_keyboard: [rows]
     }
   });
 };
@@ -62,4 +51,4 @@ const askToRestart = (ctx: THelpUAContext) => {
   ctx.reply('Cannot process response, try /start again');
 };
 
-export { askForLanguage, askForInfo, askForHelp, askToProvideHelp, askToRestart };
+export { askForLanguage, askForInfo, askForHelpType, askToRestart };

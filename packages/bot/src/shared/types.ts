@@ -1,10 +1,11 @@
 import { Context } from 'telegraf';
 
 type TSelection = {
-  language: string | null;
-  option: string | null;
-  helpType: string | null;
+  uiLanguageId: number | null;
+  optionId: number | null;
+  helpTypeId: number | null;
   userId: number | null;
+  chatId: number | null;
 };
 
 type TSession = {
@@ -15,4 +16,27 @@ type TSession = {
 
 type THelpUAContext = Context & TSession;
 
-export { TSelection, THelpUAContext };
+interface ILanguage {
+  id: number;
+  language: string;
+}
+
+interface IOption {
+  id: number;
+  label: string;
+}
+
+interface IHelpType {
+  id: number;
+  label: string;
+}
+
+interface IUser {
+  chatId: number;
+  telegramUserId: number;
+  uiLanguage: string;
+  option: string;
+  helpType: string;
+}
+
+export { TSelection, THelpUAContext, ILanguage, IOption, IHelpType, IUser };

@@ -1,13 +1,14 @@
 import { Telegraf } from 'telegraf';
-import { THelpUAContext, TSelection } from '../shared/types';
-import { askForHelp, askForInfo, askToProvideHelp, askToRestart } from '../questions';
+import { IUser, THelpUAContext, TSelection } from '../shared/types';
+import { askForHelpType, askForInfo, askToRestart } from '../questions';
 import { register } from '../db';
 
 const initialSelection: TSelection = {
-  language: null,
+  uiLanguageId: null,
   userId: null,
-  option: null,
-  helpType: null
+  chatId: null,
+  optionId: null,
+  helpTypeId: null
 };
 
 interface IWithDefaultSession {
@@ -20,15 +21,15 @@ const withInitialSession = ({ selection, options }: IWithDefaultSession): TSelec
 };
 
 const initAnswerListeners = (bot: Telegraf<THelpUAContext>) => {
-  bot.action(/language:(.*)/, ctx => {
+  bot.action(/ui-language:(.*)/, ctx => {
     if (!ctx || !ctx.chat) return;
 
-    const language = ctx.match[1];
+    const uiLanguageId = parseInt(ctx.match[1]);
 
-    if (language) {
-      ctx.session.selection = withInitialSession({ selection: ctx.session.selection, options: { language } });
+    if (uiLanguageId) {
+      ctx.session.selection = withInitialSession({ selection: ctx.session.selection, options: { uiLanguageId } });
       ctx.session.selection.userId = ctx.update.callback_query.from.id;
-      askForInfo(bot, ctx.chat.id);
+      askForInfo(bot, ctx.chat.id, uiLanguageId);
     } else {
       askToRestart(ctx);
     }
@@ -37,25 +38,27 @@ const initAnswerListeners = (bot: Telegraf<THelpUAContext>) => {
   bot.action(/option:(.*)/, ctx => {
     if (!ctx || !ctx.chat) return;
 
-    const option = ctx.match[1];
+    const uiLanguageId = ctx.session.selection.uiLanguageId as number;
+    const optionId = parseInt(ctx.match[1]);
 
-    if (option && ctx.session.selection) {
-      ctx.session.selection.option = option;
-      option === 'need-help' ? askForHelp(bot, ctx.chat.id) : askToProvideHelp(bot, ctx.chat.id);
+    if (optionId && ctx.session.selection) {
+      ctx.session.selection.optionId = optionId;
+      askForHelpType(bot, ctx.chat.id, uiLanguageId, optionId);
     } else {
       askToRestart(ctx);
     }
   });
 
-  bot.action(/help-type:(.*)/, ctx => {
+  bot.action(/help-type:(.*)/, async ctx => {
     if (!ctx || !ctx.chat) return;
 
-    const helpType = ctx.match[1];
+    const helpTypeId = parseInt(ctx.match[1]);
 
-    if (helpType && ctx.session.selection) {
-      ctx.session.selection.helpType = helpType;
-      register(ctx.session.selection);
-      ctx.reply(`${helpType}: ${JSON.stringify(ctx.session.selection)}`);
+    if (helpTypeId && ctx.session.selection) {
+      ctx.session.selection.helpTypeId = helpTypeId;
+      const user = (await register(ctx.session.selection)) as IUser;
+
+      ctx.reply(`Successfully registered user: ${JSON.stringify(user)}`);
     } else {
       askToRestart(ctx);
     }
