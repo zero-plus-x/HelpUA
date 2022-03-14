@@ -9,7 +9,8 @@
     "dev:bot": "node-dev packages/bot/src/index.ts",
     "start:backend": "pnpm --filter=@help-ua/backend start",
     "dev:backend": "node-dev packages/backend/src/index.ts",
-    "lint": "eslint '**/*.ts' --max-warnings 0"
+    "lint": "eslint '**/*.ts' --max-warnings 0",
+    "migrate:deploy": "pnpm --filter=@help-ua/backend migrate:deploy"
   },
   "repository": {
     "type": "git",
