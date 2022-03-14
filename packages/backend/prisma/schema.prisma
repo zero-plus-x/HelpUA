@@ -8,34 +8,43 @@ generator client {
 }
 
 model Language {
-  id       Int    @id @default(autoincrement())
-  language String
-  users    User[]
-}
-
-model Option {
   id        Int        @id @default(autoincrement())
-  option    String
+  language  String
+  showInUI  Boolean    @default(true)
   users     User[]
+  options   Option[]
   helpTypes HelpType[]
 }
 
+model Option {
+  id         Int        @id @default(autoincrement())
+  option     String
+  label      String
+  language   Language   @relation(fields: [languageId], references: [id])
+  languageId Int
+  helpTypes  HelpType[]
+  users      User[]
+}
+
 model HelpType {
-  id       Int    @id @default(autoincrement())
-  helpType String
-  option   Option @relation(fields: [optionId], references: [id])
-  optionId Int
-  users    User[]
+  id         Int      @id @default(autoincrement())
+  helpType   String
+  label      String
+  language   Language @relation(fields: [languageId], references: [id])
+  languageId Int
+  option     Option   @relation(fields: [optionId], references: [id])
+  optionId   Int
+  users      User[]
 }
 
 model User {
-  id         Int        @id @default(autoincrement())
-  userId     Int        @unique
-  chatId     Int 
-  language   Language   @relation(fields: [languageId], references: [id])
-  languageId Int
-  option     Option     @relation(fields: [optionId], references: [id])
-  optionId   Int
-  helpType   HelpType   @relation(fields: [helpTypeId], references: [id])
-  helpTypeId Int
+  id             Int      @id @default(autoincrement())
+  telegramUserId Int      @unique
+  chatId         Int
+  uiLanguage     Language @relation(fields: [uiLanguageId], references: [id])
+  uiLanguageId   Int
+  option         Option   @relation(fields: [optionId], references: [id])
+  optionId       Int
+  helpType       HelpType @relation(fields: [helpTypeId], references: [id])
+  helpTypeId     Int
 }

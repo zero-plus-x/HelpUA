@@ -36,4 +36,12 @@ const findHelpType = (prisma: PrismaClient, helpType: string) => {
   });
 };
 
-export { findLanguage, findOption, findHelpType };
+const getUILanguages = (prisma: PrismaClient) => {
+  return prisma.language.findMany({
+    where: {
+      showInUI: true
+    }
+  });
+};
+
+export { findLanguage, findOption, findHelpType, getUILanguages };

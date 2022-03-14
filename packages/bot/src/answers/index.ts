@@ -4,8 +4,9 @@ import { askForHelp, askForInfo, askToProvideHelp, askToRestart } from '../quest
 import { register } from '../db';
 
 const initialSelection: TSelection = {
-  language: null,
+  uiLanguage: null,
   userId: null,
+  chatId: null,
   option: null,
   helpType: null
 };
@@ -20,13 +21,13 @@ const withInitialSession = ({ selection, options }: IWithDefaultSession): TSelec
 };
 
 const initAnswerListeners = (bot: Telegraf<THelpUAContext>) => {
-  bot.action(/language:(.*)/, ctx => {
+  bot.action(/ui-language:(.*)/, ctx => {
     if (!ctx || !ctx.chat) return;
 
-    const language = ctx.match[1];
+    const uiLanguage = ctx.match[1];
 
-    if (language) {
-      ctx.session.selection = withInitialSession({ selection: ctx.session.selection, options: { language } });
+    if (uiLanguage) {
+      ctx.session.selection = withInitialSession({ selection: ctx.session.selection, options: { uiLanguage } });
       ctx.session.selection.userId = ctx.update.callback_query.from.id;
       askForInfo(bot, ctx.chat.id);
     } else {

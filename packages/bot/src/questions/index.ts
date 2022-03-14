@@ -1,16 +1,27 @@
 import { Telegraf } from 'telegraf';
+import { getUILanguages } from '../db';
 import { THelpUAContext } from '../shared/types';
 
-const askForLanguage = (bot: Telegraf<THelpUAContext>, chatId: number) => {
+interface ILanguage {
+  id: number;
+  language: string;
+}
+
+const askForLanguage = async (bot: Telegraf<THelpUAContext>, chatId: number) => {
+  const uiLanguages = (await getUILanguages()) as ILanguage[];
+
+  const options = uiLanguages.map(language => {
+    return { text: language.label, callback_data: `ui-language:${language.id}` };
+  });
+  // [
+  //   { text: 'English', callback_data: 'ui-language:english' },
+  //   { text: 'Ukrainian', callback_data: 'ui-language:ukrainian' },
+  //   { text: 'Russian', callback_data: 'ui-language:russian' }
+  // ]
+
   bot.telegram.sendMessage(chatId, 'Please select a language', {
     reply_markup: {
-      inline_keyboard: [
-        [
-          { text: 'English', callback_data: 'language:english' },
-          { text: 'Ukrainian', callback_data: 'language:ukrainian' },
-          { text: 'Russian', callback_data: 'language:russian' }
-        ]
-      ]
+      inline_keyboard: [options]
     }
   });
 };
