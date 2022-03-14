@@ -8,10 +8,12 @@ Monorepo for the 0+X initiative: creating a telegram bot to match helpers with h
 
 ## Running locally
 
-craete .env file in packages/bot (use sample.env) as a reference
+create your own bot through https://t.me/BotFather
+add bot token to .env file in packages/bot (use sample.env as a reference)
 
 ```
 docker-compose up
+docker exec helpua_backend_1 pnpm migrate:deploy
 ```
 
 ## Running without Docker
