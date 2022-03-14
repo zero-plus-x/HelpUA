@@ -6,7 +6,7 @@ COPY ./pnpm-lock.yaml ./
 COPY ./package.json ./
 COPY ./packages/backend/package.json ./packages/backend/package.json
 
-RUN pnpm install -r --offline --prod
+RUN pnpm install -r --prod
 
 COPY ./packages/backend/src ./packages/backend/src
 COPY ./packages/backend/prisma ./packages/backend/prisma
