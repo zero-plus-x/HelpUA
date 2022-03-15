@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import { UILanguage } from '@prisma/client';
-import { Answer, User } from '../bot/shared/types';
+import { Answer, Selection, User } from '../bot/shared/types';
 import { CategoryTranslations, RoleTranslations, UILanguageLabels } from '../translations';
 
 const prisma = new PrismaClient();
@@ -44,6 +44,10 @@ export const getCategories = (uiLanguage: UILanguage): Answer[] => {
     }
   })
 };
+
+export const createOfferOrRequest = (selection: Selection) => {
+  console.log(selection)
+}
 
 // @TODO disconnect on shutdown or on error
 // await prisma.$disconnect()

@@ -1,8 +1,8 @@
 import { UILanguage, Category } from '@prisma/client';
 
 export enum Role {
-  HELPEE,
-  HELPER,
+  HELPEE = 'HELPEE',
+  HELPER = 'HELPER',
 }
 
 export const UILanguageLabels = {
@@ -56,3 +56,5 @@ const isSomeEnum = <T>(e: T) => (token: any): token is T[keyof T] =>  {
     return Object.values(e).includes(token as T[keyof T]);
 }
 export const isUILanguage = isSomeEnum(UILanguage)
+export const isRole = isSomeEnum(Role)
+export const isCategory = isSomeEnum(Category)

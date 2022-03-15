@@ -1,9 +1,11 @@
+import {Category, UILanguage} from '@prisma/client';
 import { Context } from 'telegraf';
+import {Role} from '../../translations';
 
 export type Selection = {
-  uiLanguage: string | null;
-  role: string | null;
-  category: string | null;
+  uiLanguage: UILanguage | null;
+  role: Role | null;
+  category: Category | null;
 };
 
 export type Session = {

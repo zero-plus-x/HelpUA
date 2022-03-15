@@ -1,8 +1,8 @@
 import { splitEvery } from 'ramda'
 import { Telegraf } from 'telegraf';
 import { HelpUAContext, Selection } from './shared/types';
-import { getCategories, getRoles, getUILanguages, register } from '../db';
-import { isUILanguage } from '../translations';
+import { createOfferOrRequest, getCategories, getRoles, getUILanguages, register } from '../db';
+import { isCategory, isRole, isUILanguage } from '../translations';
 
 const initialSelection: Selection = {
   uiLanguage: null,
@@ -26,6 +26,7 @@ const withInitialSession = ({ selection, options }: WithDefaultSession): Selecti
 };
 
 export const initListeners = (bot: Telegraf<HelpUAContext>) => {
+  // @TODO add middleware that will catch errors and reply with restart message
   bot.start(ctx => {
     if (!ctx || !ctx.chat) return;
 
@@ -48,29 +49,31 @@ export const initListeners = (bot: Telegraf<HelpUAContext>) => {
 
     const uiLanguage = ctx.match[1];
 
-    if (uiLanguage != null && isUILanguage(uiLanguage)) {
-      ctx.session.selection = withInitialSession({ selection: ctx.session.selection, options: { uiLanguage } });
-      const userId = ctx.update.callback_query.from.id
-
-      await register({
-        userId,
-        uiLanguage,
-        chatId: ctx.chat.id
-      });
-
-      const roles = getRoles(uiLanguage);
-      const rows = roles.map(role => ({
-        text: role.label,
-        callback_data: `role:${role.key}`
-      }));
-      ctx.reply('Please select an option', {
-        reply_markup: {
-          inline_keyboard: [rows]
-        }
-      });
-    } else {
+    if (uiLanguage == null || !isUILanguage(uiLanguage)) {
+      console.error("Validation failed on ui-language")
       ctx.reply(getRestartMessage())
+      return
     }
+
+    ctx.session.selection = withInitialSession({ selection: ctx.session.selection, options: { uiLanguage } });
+    const userId = ctx.update.callback_query.from.id
+
+    await register({
+      userId,
+      uiLanguage,
+      chatId: ctx.chat.id
+    });
+
+    const roles = getRoles(uiLanguage);
+    const rows = roles.map(role => ({
+      text: role.label,
+      callback_data: `role:${role.key}`
+    }));
+    ctx.reply('Please select an option', {
+      reply_markup: {
+        inline_keyboard: [rows]
+      }
+    });
   });
 
   bot.action(/role:(.*)/, ctx => {
@@ -79,21 +82,24 @@ export const initListeners = (bot: Telegraf<HelpUAContext>) => {
     const uiLanguage = ctx.session.selection.uiLanguage;
     const role = ctx.match[1];
 
-    if (role && uiLanguage != null && ctx.session.selection && isUILanguage(uiLanguage)) {
-      ctx.session.selection.role = role;
-      const categories = getCategories(uiLanguage);
-      const rows = categories.map(category => ({
-        text: category.label,
-        callback_data: `help-type:${category.key}`
-      }));
-      ctx.reply('What do you need help with?', {
-        reply_markup: {
-          inline_keyboard: splitEvery(3, rows)
-        }
-      });
-    } else {
+    if (!role || uiLanguage == null || !ctx.session.selection || !isUILanguage(uiLanguage) || !isRole(role)) {
+      console.error("Validation failed on role", role)
       ctx.reply(getRestartMessage())
+      return;
     }
+
+    ctx.session.selection.role = role;
+    const categories = getCategories(uiLanguage);
+    const rows = categories.map(category => ({
+      text: category.label,
+      callback_data: `help-type:${category.key}`
+    }));
+
+    ctx.reply('What do you need help with?', {
+      reply_markup: {
+        inline_keyboard: splitEvery(3, rows)
+      }
+    });
   });
 
   bot.action(/help-type:(.*)/, async ctx => {
@@ -101,11 +107,13 @@ export const initListeners = (bot: Telegraf<HelpUAContext>) => {
 
     const category = ctx.match[1];
 
-    if (category && ctx.session.selection) {
-      ctx.session.selection.category = category;
-
-    } else {
+    if (!category || !ctx.session.selection || !isCategory(category)) {
+      console.error("Validation failed on help-type")
       ctx.reply(getRestartMessage())
+      return;
     }
+
+    ctx.session.selection.category = category;
+    createOfferOrRequest(ctx.session.selection)
   });
 };
