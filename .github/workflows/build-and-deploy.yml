@@ -74,7 +74,6 @@ jobs:
             docker run -d \
             --env TELEGRAM_BOT_TOKEN=${{ secrets.TELEGRAM_BOT_TOKEN }} \
             --env DATABASE_URL=${{ secrets.DATABASE_URL }} \
-            --network net \
             --restart always \
             --name $(echo $IMAGE_NAME) \
             $(echo $REGISTRY)/$(echo $IMAGE_NAME):$(echo $GITHUB_SHA | head -c7)
