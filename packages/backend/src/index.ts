@@ -2,8 +2,7 @@ import { Telegraf } from 'telegraf';
 import LocalSession from 'telegraf-session-local';
 import dotenv from 'dotenv';
 import { HelpUAContext } from './bot/shared/types';
-import { askForLanguage } from './bot/questions';
-import { initAnswerListeners, initialSelection } from './bot/answers';
+import { initListeners } from './bot';
 
 dotenv.config({ path: `${__dirname}/../.env` });
 
@@ -17,14 +16,7 @@ const bot = new Telegraf<HelpUAContext>(process.env.TELEGRAM_BOT_TOKEN);
 const session = new LocalSession({ database: 'session_db.json' }).middleware();
 bot.use(session); // @TODO use redis session storage https://github.com/telegraf/telegraf-session-redis
 
-bot.start(ctx => {
-  if (!ctx || !ctx.chat) return;
-
-  ctx.session.selection = { ...initialSelection };
-  askForLanguage(bot, ctx.chat.id);
-});
-
-initAnswerListeners(bot);
+initListeners(bot);
 
 bot.launch().then(() => console.log('>> Bot ready'));
 
