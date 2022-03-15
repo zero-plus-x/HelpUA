@@ -39,16 +39,3 @@ services:
     environment:
       - DATABASE_URL=postgresql://postgres:postgres@postgres/dev
     command: pnpm dev:backend
-  bot:
-    build:
-      context: .
-      dockerfile: packages/bot/dev.Dockerfile
-    volumes:
-      - ./packages/bot/src:/home/node/app/packages/bot/src
-    ports:
-      - 8080:8080
-    links:
-      - backend
-    env_file:
-      - packages/bot/.env
-    command: pnpm dev:bot
