@@ -1,15 +1,3 @@
-/*
-  Warnings:
-
-  - You are about to drop the column `helpTypeId` on the `User` table. All the data in the column will be lost.
-  - You are about to drop the column `optionId` on the `User` table. All the data in the column will be lost.
-  - You are about to drop the column `uiLanguageId` on the `User` table. All the data in the column will be lost.
-  - You are about to drop the `HelpType` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `Language` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `Option` table. If the table is not empty, all the data it contains will be lost.
-  - Added the required column `uiLanguage` to the `User` table without a default value. This is not possible if the table is not empty.
-
-*/
 -- CreateEnum
 CREATE TYPE "UILanguage" AS ENUM ('ENGLISH', 'RUSSIAN', 'UKRAINIAN');
 
@@ -22,38 +10,15 @@ CREATE TYPE "Role" AS ENUM ('HELPEE', 'HELPER');
 -- CreateEnum
 CREATE TYPE "Category" AS ENUM ('URGENT_CARE', 'TRANSPORTATION', 'LOCAL_INFORMATION', 'ACCOMODATION', 'MEDICAL_HELP');
 
--- DropForeignKey
-ALTER TABLE "HelpType" DROP CONSTRAINT "HelpType_languageId_fkey";
+-- CreateTable
+CREATE TABLE "User" (
+    "id" SERIAL NOT NULL,
+    "telegramUserId" INTEGER NOT NULL,
+    "chatId" INTEGER NOT NULL,
+    "uiLanguage" "UILanguage" NOT NULL,
 
--- DropForeignKey
-ALTER TABLE "HelpType" DROP CONSTRAINT "HelpType_optionId_fkey";
-
--- DropForeignKey
-ALTER TABLE "Option" DROP CONSTRAINT "Option_languageId_fkey";
-
--- DropForeignKey
-ALTER TABLE "User" DROP CONSTRAINT "User_helpTypeId_fkey";
-
--- DropForeignKey
-ALTER TABLE "User" DROP CONSTRAINT "User_optionId_fkey";
-
--- DropForeignKey
-ALTER TABLE "User" DROP CONSTRAINT "User_uiLanguageId_fkey";
-
--- AlterTable
-ALTER TABLE "User" DROP COLUMN "helpTypeId",
-DROP COLUMN "optionId",
-DROP COLUMN "uiLanguageId",
-ADD COLUMN     "uiLanguage" "UILanguage" NOT NULL;
-
--- DropTable
-DROP TABLE "HelpType";
-
--- DropTable
-DROP TABLE "Language";
-
--- DropTable
-DROP TABLE "Option";
+    CONSTRAINT "User_pkey" PRIMARY KEY ("id")
+);
 
 -- CreateTable
 CREATE TABLE "Offer" (
@@ -85,6 +50,9 @@ CREATE TABLE "Match" (
 
     CONSTRAINT "Match_pkey" PRIMARY KEY ("id")
 );
+
+-- CreateIndex
+CREATE UNIQUE INDEX "User_telegramUserId_key" ON "User"("telegramUserId");
 
 -- AddForeignKey
 ALTER TABLE "Offer" ADD CONSTRAINT "Offer_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
