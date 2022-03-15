@@ -1,5 +1,5 @@
 import express from 'express';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, UILanguage, Role } from '@prisma/client';
 import { getHelpTypesByLanguageIdAndOptionId, getOptionsByLanguageId, getUILanguages } from './db/helpers';
 
 const prisma = new PrismaClient();
@@ -8,31 +8,57 @@ const port = 3000;
 const app = express();
 app.use(express.json());
 
+const UILanguageLabels = {
+    [UILanguage.ENGLISH]: 'English',
+    [UILanguage.UKRAINIAN]: 'Украї́нська мо́ва',
+    [UILanguage.RUSSIAN]: 'Русский язык',
+}
+
+const RoleTranslations = {
+  [Role.HELPEE]: {
+    [UILanguage.ENGLISH]: 'I want to help',
+    [UILanguage.UKRAINIAN]: 'Я можу допомогти',
+    [UILanguage.RUSSIAN]: 'Я могу помочь',
+  },
+  [Role.HELPER]: {
+    [UILanguage.ENGLISH]: 'I need help',
+    [UILanguage.UKRAINIAN]: 'Мені потрібна допомога',
+    [UILanguage.RUSSIAN]: 'Мне нужна помощь',
+  }
+}
+
+const isSomeEnum = <T>(e: T) => (token: any): token is T[keyof T] =>  {
+    return Object.values(e).includes(token as T[keyof T]);
+}
+const isUILanguage = isSomeEnum(UILanguage)
+
 app.get('/ui_languages', async (_, res) => {
-  try {
-    const uiLanguages = await getUILanguages(prisma);
-
-    res.status(200).json(uiLanguages);
-  } catch (e) {
-    res.status(500).send();
-  }
+  const result = Object.entries(UILanguageLabels).map(([key, label]) => {
+    return {key, label}
+  })
+  res.status(200).json(result)
 });
 
-app.get('/languages/:languageId/options', async (req, res) => {
-  const languageId = parseInt(req.params.languageId);
+app.get('/languages/:uiLanguage/roles', async (req, res) => {
+  const uiLanguage = req.params.uiLanguage;
 
-  try {
-    const options = await getOptionsByLanguageId(prisma, languageId);
-
-    res.status(200).json(options);
-  } catch (e) {
-    res.status(500).send();
+  if (!isUILanguage(uiLanguage)) {
+    res.status(400).send(`ui language ${uiLanguage} does not exist`)
+    return 
   }
+
+  const result = Object.entries(RoleTranslations).map(([key, labels]) => {
+    return {
+      key,
+      label: labels[uiLanguage]
+    }
+  })
+  res.status(200).json(result)
 });
 
-app.get('/languages/:languageId/options/:optionId/help_types', async (req, res) => {
+app.get('/languages/:languageId/roles/:role/help_types', async (req, res) => {
   const languageId = parseInt(req.params.languageId);
-  const optionId = parseInt(req.params.optionId);
+  const optionId = parseInt(req.params.role);
 
   try {
     const options = await getHelpTypesByLanguageIdAndOptionId(prisma, languageId, optionId);

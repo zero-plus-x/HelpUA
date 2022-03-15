@@ -35,14 +35,6 @@ const createLanguages = async () => {
   const ukrainian = await prisma.language.create({ data: { language: 'Ukrainian', showInUI: true } });
   const russian = await prisma.language.create({ data: { language: 'Russian', showInUI: true } });
 
-  // Add other speaking languages (to be implemented)
-  await prisma.language.createMany({
-    data: [
-      { language: 'Polish', showInUI: false },
-      { language: 'Romanian', showInUI: false }
-    ]
-  });
-
   return { english, ukrainian, russian };
 };
 

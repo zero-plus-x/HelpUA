@@ -13,7 +13,7 @@ enum UILanguage {
   UKRAINIAN
 }
 
-enum Language {
+enum SpokenLanguage {
   ENGLISH
   RUSSIAN
   UKRAINIAN
@@ -28,7 +28,7 @@ enum Role {
   HELPER
 }
 
-enum HelpType {
+enum Category {
   URGENT_CARE
   TRANSPORTATION
   LOCAL_INFORMATION
@@ -50,9 +50,9 @@ model Offer {
   user       User       @relation(fields: [userId], references: [id])
   userId     Int
   role       Role
-  helpType   HelpType
-  helpTypeId Int
-  languages  Language[]
+  category   Category
+  languages  SpokenLanguage[]
+  matches    Match[]
 }
 
 model Request {
@@ -60,7 +60,15 @@ model Request {
   user       User       @relation(fields: [userId], references: [id])
   userId     Int
   role       Role
-  helpType   HelpType
-  helpTypeId Int
-  languages  Language[]
+  caterogy   Category
+  languages  SpokenLanguage[]
+  matches    Match[]
+}
+
+model Match {
+  id        Int     @id @default(autoincrement())
+  offer     Offer   @relation(fields: [offerId], references: [id])
+  offerId   Int
+  request   Request @relation(fields: [requestId], references: [id])
+  requestId Int
 }

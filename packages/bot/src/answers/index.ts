@@ -4,7 +4,7 @@ import { askForHelpType, askForInfo, askToRestart } from '../questions';
 import { register } from '../db';
 
 const initialSelection: TSelection = {
-  uiLanguageId: null,
+  uiLanguage: null,
   userId: null,
   chatId: null,
   optionId: null,
@@ -24,26 +24,26 @@ const initAnswerListeners = (bot: Telegraf<THelpUAContext>) => {
   bot.action(/ui-language:(.*)/, ctx => {
     if (!ctx || !ctx.chat) return;
 
-    const uiLanguageId = parseInt(ctx.match[1]);
+    const uiLanguage = ctx.match[1];
 
-    if (uiLanguageId) {
-      ctx.session.selection = withInitialSession({ selection: ctx.session.selection, options: { uiLanguageId } });
+    if (uiLanguage != null) {
+      ctx.session.selection = withInitialSession({ selection: ctx.session.selection, options: { uiLanguage } });
       ctx.session.selection.userId = ctx.update.callback_query.from.id;
-      askForInfo(bot, ctx.chat.id, uiLanguageId);
+      askForInfo(bot, ctx.chat.id, uiLanguage);
     } else {
       askToRestart(ctx);
     }
   });
 
-  bot.action(/option:(.*)/, ctx => {
+  bot.action(/role:(.*)/, ctx => {
     if (!ctx || !ctx.chat) return;
 
-    const uiLanguageId = ctx.session.selection.uiLanguageId as number;
+    const uiLanguage = ctx.session.selection.uiLanguage;
     const optionId = parseInt(ctx.match[1]);
 
-    if (optionId && ctx.session.selection) {
+    if (optionId && uiLanguage != null && ctx.session.selection) {
       ctx.session.selection.optionId = optionId;
-      askForHelpType(bot, ctx.chat.id, uiLanguageId, optionId);
+      askForHelpType(bot, ctx.chat.id, uiLanguage, optionId);
     } else {
       askToRestart(ctx);
     }
