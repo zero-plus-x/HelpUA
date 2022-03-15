@@ -1,5 +1,5 @@
 import fetch from 'node-fetch';
-import { TSelection, TLanguage, TRole } from '../shared/types';
+import { TSelection, TAnswer } from '../shared/types';
 
 export const register = async (data: TSelection) => {
   try {
@@ -25,38 +25,38 @@ export const register = async (data: TSelection) => {
   }
 };
 
-export const getUILanguages = async (): Promise<TLanguage[]> => {
+export const getUILanguages = async (): Promise<TAnswer[]> => {
   try {
     const response = await fetch(`${process.env.BACKEND_HOST}/ui_languages`);
     const uiLanguages = await response.json();
 
-    return uiLanguages as TLanguage[]; // @TODO validate
+    return uiLanguages as TAnswer[]; // @TODO validate
   } catch (e) {
     console.error('Error: Cannot get UI languages:', e);
     return [];
   }
 };
 
-export const getRoles = async (uiLanguage: string): Promise<TRole[]> => {
+export const getRoles = async (uiLanguage: string): Promise<TAnswer[]> => {
   try {
     const response = await fetch(`${process.env.BACKEND_HOST}/languages/${uiLanguage}/roles`);
     const options = await response.json();
 
-    return options as TRole[]; // @TODO validate
+    return options as TAnswer[]; // @TODO validate
   } catch (e) {
     console.error('Error: Cannot get options:', e);
     return [];
   }
 };
 
-export const getHelpTypes = async (uiLanguage: string, role: string) => {
+export const getCategories = async (uiLanguage: string, role: string): Promise<TAnswer[]> => {
   try {
     const response = await fetch(
       `${process.env.BACKEND_HOST}/languages/${uiLanguage}/roles/${role}/help_types`
     );
     const options = await response.json();
 
-    return options;
+    return options as TAnswer[]; // @TODO validate
   } catch (e) {
     console.error('Error: Cannot get help types:', e);
     return [];

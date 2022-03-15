@@ -7,8 +7,8 @@ const initialSelection: TSelection = {
   uiLanguage: null,
   userId: null,
   chatId: null,
-  optionId: null,
-  helpTypeId: null
+  role: null,
+  category: null
 };
 
 interface IWithDefaultSession {
@@ -39,11 +39,11 @@ const initAnswerListeners = (bot: Telegraf<THelpUAContext>) => {
     if (!ctx || !ctx.chat) return;
 
     const uiLanguage = ctx.session.selection.uiLanguage;
-    const optionId = parseInt(ctx.match[1]);
+    const role = ctx.match[1];
 
-    if (optionId && uiLanguage != null && ctx.session.selection) {
-      ctx.session.selection.optionId = optionId;
-      askForHelpType(bot, ctx.chat.id, uiLanguage, optionId);
+    if (role && uiLanguage != null && ctx.session.selection) {
+      ctx.session.selection.role = role;
+      askForHelpType(bot, ctx.chat.id, uiLanguage, role);
     } else {
       askToRestart(ctx);
     }
@@ -52,10 +52,10 @@ const initAnswerListeners = (bot: Telegraf<THelpUAContext>) => {
   bot.action(/help-type:(.*)/, async ctx => {
     if (!ctx || !ctx.chat) return;
 
-    const helpTypeId = parseInt(ctx.match[1]);
+    const category = ctx.match[1];
 
-    if (helpTypeId && ctx.session.selection) {
-      ctx.session.selection.helpTypeId = helpTypeId;
+    if (category && ctx.session.selection) {
+      ctx.session.selection.category = category;
       const user = (await register(ctx.session.selection)) as IUser;
 
       ctx.reply(`Successfully registered user: ${JSON.stringify(user)}`);

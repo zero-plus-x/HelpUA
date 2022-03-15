@@ -2,8 +2,8 @@ import { Context } from 'telegraf';
 
 export type TSelection = {
   uiLanguage: string | null;
-  optionId: number | null;
-  helpTypeId: number | null;
+  role: string | null;
+  category: string | null;
   userId: number | null;
   chatId: number | null;
 };
@@ -16,18 +16,8 @@ export type TSession = {
 
 export type THelpUAContext = Context & TSession;
 
-export type TLanguage = {
+export type TAnswer = {
   key: string;
-  label: string;
-}
-
-export interface TRole {
-  key: string;
-  label: string;
-}
-
-export interface IHelpType {
-  id: number;
   label: string;
 }
 

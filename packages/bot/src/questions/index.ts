@@ -1,6 +1,6 @@
 import { Telegraf } from 'telegraf';
-import { getHelpTypes, getRoles, getUILanguages } from '../db';
-import { IHelpType, THelpUAContext } from '../shared/types';
+import { getCategories, getRoles, getUILanguages } from '../db';
+import { THelpUAContext } from '../shared/types';
 
 const askForLanguage = async (bot: Telegraf<THelpUAContext>, chatId: number) => {
   const uiLanguages = await getUILanguages();
@@ -33,12 +33,12 @@ const askForHelpType = async (
   bot: Telegraf<THelpUAContext>,
   chatId: number,
   uiLanguage: string,
-  optionId: number
+  role: string
 ) => {
-  const helpTypes = (await getHelpTypes(uiLanguage, optionId)) as IHelpType[];
+  const helpTypes = await getCategories(uiLanguage, role);
   const rows = helpTypes.map(helpType => ({
     text: helpType.label,
-    callback_data: `help-type:${helpType.id}`
+    callback_data: `help-type:${helpType.key}`
   }));
   bot.telegram.sendMessage(chatId, 'What do you need help with?', {
     reply_markup: {

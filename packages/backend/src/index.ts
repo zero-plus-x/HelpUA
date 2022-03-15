@@ -1,5 +1,5 @@
 import express from 'express';
-import { PrismaClient, UILanguage, Role } from '@prisma/client';
+import { PrismaClient, UILanguage, Role, Category } from '@prisma/client';
 import { getHelpTypesByLanguageIdAndOptionId, getOptionsByLanguageId, getUILanguages } from './db/helpers';
 
 const prisma = new PrismaClient();
@@ -25,6 +25,34 @@ const RoleTranslations = {
     [UILanguage.UKRAINIAN]: 'Мені потрібна допомога',
     [UILanguage.RUSSIAN]: 'Мне нужна помощь',
   }
+}
+
+const CategoryTranslations = {
+  [Category.URGENT_CARE]: {
+    [UILanguage.ENGLISH]: 'Urgent help',
+    [UILanguage.UKRAINIAN]: 'Невідкладна допомога',
+    [UILanguage.RUSSIAN]: 'Срочная помощь',
+  },
+  [Category.TRANSPORTATION]: {
+    [UILanguage.ENGLISH]: 'Transportation',
+    [UILanguage.UKRAINIAN]: 'Перевезення',
+    [UILanguage.RUSSIAN]: 'Транспорт',
+  },
+  [Category.LOCAL_INFORMATION]: {
+    [UILanguage.ENGLISH]: 'Local information',
+    [UILanguage.UKRAINIAN]: 'Місцева інформація',
+    [UILanguage.RUSSIAN]: 'Местная информация',
+  },
+  [Category.ACCOMODATION]: {
+    [UILanguage.ENGLISH]: 'Accommodation',
+    [UILanguage.UKRAINIAN]: 'Проживання',
+    [UILanguage.RUSSIAN]: 'Жилье',
+  },
+  [Category.MEDICAL_HELP]: {
+    [UILanguage.ENGLISH]: 'Medical help',
+    [UILanguage.UKRAINIAN]: 'Медична допомога',
+    [UILanguage.RUSSIAN]: 'Медицинская помощь',
+  },
 }
 
 const isSomeEnum = <T>(e: T) => (token: any): token is T[keyof T] =>  {
@@ -56,21 +84,24 @@ app.get('/languages/:uiLanguage/roles', async (req, res) => {
   res.status(200).json(result)
 });
 
-app.get('/languages/:languageId/roles/:role/help_types', async (req, res) => {
-  const languageId = parseInt(req.params.languageId);
-  const optionId = parseInt(req.params.role);
-
-  try {
-    const options = await getHelpTypesByLanguageIdAndOptionId(prisma, languageId, optionId);
-
-    res.status(200).json(options);
-  } catch (e) {
-    res.status(500).send();
+app.get('/languages/:uiLanguage/roles/:role/help_types', async (req, res) => {
+  const uiLanguage = req.params.uiLanguage;
+  if (!isUILanguage(uiLanguage)) {
+    res.status(400).send(`ui language ${uiLanguage} does not exist`)
+    return 
   }
+
+  const result = Object.entries(CategoryTranslations).map(([key, labels]) => {
+    return {
+      key,
+      label: labels[uiLanguage]
+    }
+  })
+  res.status(200).json(result)
 });
 
 app.post('/register', async (req, res) => {
-  const { userId, chatId, uiLanguageId, optionId, helpTypeId } = req.body;
+  const { userId, chatId, uiLanguage } = req.body;
 
   try {
     // @NOTE: Dev only, this removes the user before storing to db, so it's easier to test locally
@@ -81,22 +112,19 @@ app.post('/register', async (req, res) => {
   }
 
   try {
-    if (userId && chatId && uiLanguageId && optionId && helpTypeId) {
+    if (userId && chatId && uiLanguage) {
       const user = await prisma.user.create({
-        data: { chatId, telegramUserId: userId, uiLanguageId, optionId, helpTypeId }
+        data: { chatId, telegramUserId: userId, uiLanguage }
       });
 
       const response = await prisma.user.findUnique({
         where: { id: user.id },
-        include: { uiLanguage: true, option: true, helpType: true }
       });
 
       res.status(200).json({
         chatId: response?.chatId,
         telegramUserId: response?.telegramUserId,
-        uiLanguage: response?.uiLanguage.language,
-        option: response?.option.label,
-        helpType: response?.helpType.label
+        uiLanguage: response?.uiLanguage,
       });
     }
 
