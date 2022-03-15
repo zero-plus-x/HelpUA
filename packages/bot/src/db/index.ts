@@ -1,7 +1,7 @@
 import fetch from 'node-fetch';
-import { TSelection } from '../shared/types';
+import { TSelection, TAnswer } from '../shared/types';
 
-const register = async (data: TSelection) => {
+export const register = async (data: TSelection) => {
   try {
     const res = await fetch(`${process.env.BACKEND_HOST}/register`, {
       method: 'POST',
@@ -25,42 +25,40 @@ const register = async (data: TSelection) => {
   }
 };
 
-const getUILanguages = async () => {
+export const getUILanguages = async (): Promise<TAnswer[]> => {
   try {
     const response = await fetch(`${process.env.BACKEND_HOST}/ui_languages`);
     const uiLanguages = await response.json();
 
-    return uiLanguages;
+    return uiLanguages as TAnswer[]; // @TODO validate
   } catch (e) {
     console.error('Error: Cannot get UI languages:', e);
     return [];
   }
 };
 
-const getOptions = async (uiLanguageId: number) => {
+export const getRoles = async (uiLanguage: string): Promise<TAnswer[]> => {
   try {
-    const response = await fetch(`${process.env.BACKEND_HOST}/languages/${uiLanguageId}/options`);
+    const response = await fetch(`${process.env.BACKEND_HOST}/languages/${uiLanguage}/roles`);
     const options = await response.json();
 
-    return options;
+    return options as TAnswer[]; // @TODO validate
   } catch (e) {
     console.error('Error: Cannot get options:', e);
     return [];
   }
 };
 
-const getHelpTypes = async (uiLanguageId: number, optionId: number) => {
+export const getCategories = async (uiLanguage: string, role: string): Promise<TAnswer[]> => {
   try {
     const response = await fetch(
-      `${process.env.BACKEND_HOST}/languages/${uiLanguageId}/options/${optionId}/help_types`
+      `${process.env.BACKEND_HOST}/languages/${uiLanguage}/roles/${role}/help_types`
     );
     const options = await response.json();
 
-    return options;
+    return options as TAnswer[]; // @TODO validate
   } catch (e) {
     console.error('Error: Cannot get help types:', e);
     return [];
   }
 };
-
-export { register, getUILanguages, getOptions, getHelpTypes };

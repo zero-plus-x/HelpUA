@@ -4,11 +4,11 @@ import { askForHelpType, askForInfo, askToRestart } from '../questions';
 import { register } from '../db';
 
 const initialSelection: TSelection = {
-  uiLanguageId: null,
+  uiLanguage: null,
   userId: null,
   chatId: null,
-  optionId: null,
-  helpTypeId: null
+  role: null,
+  category: null
 };
 
 interface IWithDefaultSession {
@@ -24,26 +24,26 @@ const initAnswerListeners = (bot: Telegraf<THelpUAContext>) => {
   bot.action(/ui-language:(.*)/, ctx => {
     if (!ctx || !ctx.chat) return;
 
-    const uiLanguageId = parseInt(ctx.match[1]);
+    const uiLanguage = ctx.match[1];
 
-    if (uiLanguageId) {
-      ctx.session.selection = withInitialSession({ selection: ctx.session.selection, options: { uiLanguageId } });
+    if (uiLanguage != null) {
+      ctx.session.selection = withInitialSession({ selection: ctx.session.selection, options: { uiLanguage } });
       ctx.session.selection.userId = ctx.update.callback_query.from.id;
-      askForInfo(bot, ctx.chat.id, uiLanguageId);
+      askForInfo(bot, ctx.chat.id, uiLanguage);
     } else {
       askToRestart(ctx);
     }
   });
 
-  bot.action(/option:(.*)/, ctx => {
+  bot.action(/role:(.*)/, ctx => {
     if (!ctx || !ctx.chat) return;
 
-    const uiLanguageId = ctx.session.selection.uiLanguageId as number;
-    const optionId = parseInt(ctx.match[1]);
+    const uiLanguage = ctx.session.selection.uiLanguage;
+    const role = ctx.match[1];
 
-    if (optionId && ctx.session.selection) {
-      ctx.session.selection.optionId = optionId;
-      askForHelpType(bot, ctx.chat.id, uiLanguageId, optionId);
+    if (role && uiLanguage != null && ctx.session.selection) {
+      ctx.session.selection.role = role;
+      askForHelpType(bot, ctx.chat.id, uiLanguage, role);
     } else {
       askToRestart(ctx);
     }
@@ -52,10 +52,10 @@ const initAnswerListeners = (bot: Telegraf<THelpUAContext>) => {
   bot.action(/help-type:(.*)/, async ctx => {
     if (!ctx || !ctx.chat) return;
 
-    const helpTypeId = parseInt(ctx.match[1]);
+    const category = ctx.match[1];
 
-    if (helpTypeId && ctx.session.selection) {
-      ctx.session.selection.helpTypeId = helpTypeId;
+    if (category && ctx.session.selection) {
+      ctx.session.selection.category = category;
       const user = (await register(ctx.session.selection)) as IUser;
 
       ctx.reply(`Successfully registered user: ${JSON.stringify(user)}`);

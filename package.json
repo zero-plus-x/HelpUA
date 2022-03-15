@@ -10,8 +10,7 @@
     "start:backend": "pnpm --filter=@help-ua/backend start",
     "dev:backend": "node-dev packages/backend/src/index.ts",
     "lint": "eslint '**/*.ts' --max-warnings 0",
-    "migrate:deploy": "pnpm --filter=@help-ua/backend migrate:deploy",
-    "seed": "pnpm --filter=@help-ua/backend seed"
+    "migrate:deploy": "pnpm --filter=@help-ua/backend migrate:deploy"
   },
   "repository": {
     "type": "git",

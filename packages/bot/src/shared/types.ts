@@ -1,42 +1,30 @@
 import { Context } from 'telegraf';
 
-type TSelection = {
-  uiLanguageId: number | null;
-  optionId: number | null;
-  helpTypeId: number | null;
+export type TSelection = {
+  uiLanguage: string | null;
+  role: string | null;
+  category: string | null;
   userId: number | null;
   chatId: number | null;
 };
 
-type TSession = {
+export type TSession = {
   session: {
     selection: TSelection;
   };
 };
 
-type THelpUAContext = Context & TSession;
+export type THelpUAContext = Context & TSession;
 
-interface ILanguage {
-  id: number;
-  language: string;
-}
-
-interface IOption {
-  id: number;
+export type TAnswer = {
+  key: string;
   label: string;
 }
 
-interface IHelpType {
-  id: number;
-  label: string;
-}
-
-interface IUser {
+export interface IUser {
   chatId: number;
   telegramUserId: number;
   uiLanguage: string;
   option: string;
   helpType: string;
 }
-
-export { TSelection, THelpUAContext, ILanguage, IOption, IHelpType, IUser };
