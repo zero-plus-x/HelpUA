@@ -1,9 +1,10 @@
+import {UILanguage} from '@prisma/client';
 import { Telegraf } from 'telegraf';
 import { getCategories, getRoles, getUILanguages } from '../db';
-import { THelpUAContext } from '../shared/types';
+import { HelpUAContext } from '../shared/types';
 
-export const askForLanguage = async (bot: Telegraf<THelpUAContext>, chatId: number) => {
-  const uiLanguages = await getUILanguages();
+export const askForLanguage = async (bot: Telegraf<HelpUAContext>, chatId: number) => {
+  const uiLanguages = getUILanguages();
   const rows = uiLanguages.map(({ key, label }) => ({
     text: label,
     callback_data: `ui-language:${key}`
@@ -16,8 +17,8 @@ export const askForLanguage = async (bot: Telegraf<THelpUAContext>, chatId: numb
   });
 };
 
-export const askForRole = async (bot: Telegraf<THelpUAContext>, chatId: number, uiLanguage: string) => {
-  const roles = await getRoles(uiLanguage);
+export const askForRole = async (bot: Telegraf<HelpUAContext>, chatId: number, uiLanguage: UILanguage) => {
+  const roles = getRoles(uiLanguage);
   const rows = roles.map(role => ({
     text: role.label,
     callback_data: `role:${role.key}`
@@ -30,12 +31,11 @@ export const askForRole = async (bot: Telegraf<THelpUAContext>, chatId: number, 
 };
 
 export const askForCategory = async (
-  bot: Telegraf<THelpUAContext>,
+  bot: Telegraf<HelpUAContext>,
   chatId: number,
-  uiLanguage: string,
-  role: string
+  uiLanguage: UILanguage,
 ) => {
-  const categories = await getCategories(uiLanguage, role);
+  const categories = getCategories(uiLanguage);
   const rows = categories.map(category => ({
     text: category.label,
     callback_data: `help-type:${category.key}`
@@ -47,6 +47,6 @@ export const askForCategory = async (
   });
 };
 
-export const askToRestart = (ctx: THelpUAContext) => {
+export const askToRestart = (ctx: HelpUAContext) => {
   ctx.reply('Cannot process response, try /start again');
 };

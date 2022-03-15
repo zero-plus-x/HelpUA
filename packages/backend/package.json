@@ -22,7 +22,9 @@
   "dependencies": {
     "@prisma/client": "^3.10.0",
     "dotenv": "^16.0.0",
-    "express": "^4.17.3",
+    "debug": "^4.3.3",
+    "telegraf": "^4.7.0",
+    "telegraf-session-local": "^2.1.0",
     "prisma": "^3.10.0"
   },
   "devDependencies": {

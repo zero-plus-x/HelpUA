@@ -23,11 +23,6 @@ enum SpokenLanguage {
   GERMAN
 }
 
-enum Role {
-  HELPEE
-  HELPER
-}
-
 enum Category {
   URGENT_CARE
   TRANSPORTATION

@@ -2,6 +2,7 @@ import { Telegraf } from 'telegraf';
 import { HelpUAContext, Selection } from '../shared/types';
 import { askForCategory, askForRole, askToRestart } from '../questions';
 import { register } from '../db';
+import {isUILanguage} from '../../translations';
 
 const initialSelection: Selection = {
   uiLanguage: null,
@@ -25,7 +26,7 @@ const initAnswerListeners = (bot: Telegraf<HelpUAContext>) => {
 
     const uiLanguage = ctx.match[1];
 
-    if (uiLanguage != null) {
+    if (uiLanguage != null && isUILanguage(uiLanguage)) {
       ctx.session.selection = withInitialSession({ selection: ctx.session.selection, options: { uiLanguage } });
       const userId = ctx.update.callback_query.from.id
 
@@ -47,9 +48,9 @@ const initAnswerListeners = (bot: Telegraf<HelpUAContext>) => {
     const uiLanguage = ctx.session.selection.uiLanguage;
     const role = ctx.match[1];
 
-    if (role && uiLanguage != null && ctx.session.selection) {
+    if (role && uiLanguage != null && ctx.session.selection && isUILanguage(uiLanguage)) {
       ctx.session.selection.role = role;
-      askForCategory(bot, ctx.chat.id, uiLanguage, role);
+      askForCategory(bot, ctx.chat.id, uiLanguage);
     } else {
       askToRestart(ctx);
     }
