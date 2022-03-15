@@ -25,5 +25,5 @@ jobs:
             --name $(echo $BACKEND_IMAGE_NAME)-seed \
             --env DATABASE_URL=${{ secrets.DATABASE_URL }} \
             $(echo $REGISTRY)/$(echo $BACKEND_IMAGE_NAME):$(echo $GITHUB_SHA | head -c7) \
-            /bin/sh -c "pnpm install; pnpm run seed"
+            /bin/sh -c "pnpm install --dev; pnpm run seed"
             docker rm $(echo $BACKEND_IMAGE_NAME)-seed
