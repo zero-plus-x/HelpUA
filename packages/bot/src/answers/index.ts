@@ -1,35 +1,41 @@
 import { Telegraf } from 'telegraf';
-import { IUser, THelpUAContext, TSelection } from '../shared/types';
-import { askForHelpType, askForInfo, askToRestart } from '../questions';
+import { HelpUAContext, Selection } from '../shared/types';
+import { askForCategory, askForRole, askToRestart } from '../questions';
 import { register } from '../db';
 
-const initialSelection: TSelection = {
+const initialSelection: Selection = {
   uiLanguage: null,
-  userId: null,
-  chatId: null,
   role: null,
   category: null
 };
 
-interface IWithDefaultSession {
-  selection?: TSelection;
+type WithDefaultSession = {
+  selection?: Selection;
   options: Record<string, any>;
 }
 
-const withInitialSession = ({ selection, options }: IWithDefaultSession): TSelection => {
-  return typeof selection === 'object' ? { ...selection, ...options } : { ...initialSelection, ...options };
+const withInitialSession = ({ selection, options }: WithDefaultSession): Selection => {
+  const selectionToReturn = typeof selection === 'object' ? selection : initialSelection
+  return { ...selectionToReturn, ...options };
 };
 
-const initAnswerListeners = (bot: Telegraf<THelpUAContext>) => {
-  bot.action(/ui-language:(.*)/, ctx => {
+const initAnswerListeners = (bot: Telegraf<HelpUAContext>) => {
+  bot.action(/ui-language:(.*)/, async ctx => {
     if (!ctx || !ctx.chat) return;
 
     const uiLanguage = ctx.match[1];
 
     if (uiLanguage != null) {
       ctx.session.selection = withInitialSession({ selection: ctx.session.selection, options: { uiLanguage } });
-      ctx.session.selection.userId = ctx.update.callback_query.from.id;
-      askForInfo(bot, ctx.chat.id, uiLanguage);
+      const userId = ctx.update.callback_query.from.id
+
+      await register({
+        userId,
+        uiLanguage,
+        chatId: ctx.chat.id
+      });
+
+      askForRole(bot, ctx.chat.id, uiLanguage);
     } else {
       askToRestart(ctx);
     }
@@ -43,7 +49,7 @@ const initAnswerListeners = (bot: Telegraf<THelpUAContext>) => {
 
     if (role && uiLanguage != null && ctx.session.selection) {
       ctx.session.selection.role = role;
-      askForHelpType(bot, ctx.chat.id, uiLanguage, role);
+      askForCategory(bot, ctx.chat.id, uiLanguage, role);
     } else {
       askToRestart(ctx);
     }
@@ -56,9 +62,6 @@ const initAnswerListeners = (bot: Telegraf<THelpUAContext>) => {
 
     if (category && ctx.session.selection) {
       ctx.session.selection.category = category;
-      const user = (await register(ctx.session.selection)) as IUser;
-
-      ctx.reply(`Successfully registered user: ${JSON.stringify(user)}`);
     } else {
       askToRestart(ctx);
     }

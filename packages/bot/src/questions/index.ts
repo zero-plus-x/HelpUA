@@ -2,7 +2,7 @@ import { Telegraf } from 'telegraf';
 import { getCategories, getRoles, getUILanguages } from '../db';
 import { THelpUAContext } from '../shared/types';
 
-const askForLanguage = async (bot: Telegraf<THelpUAContext>, chatId: number) => {
+export const askForLanguage = async (bot: Telegraf<THelpUAContext>, chatId: number) => {
   const uiLanguages = await getUILanguages();
   const rows = uiLanguages.map(({ key, label }) => ({
     text: label,
@@ -16,7 +16,7 @@ const askForLanguage = async (bot: Telegraf<THelpUAContext>, chatId: number) => 
   });
 };
 
-const askForInfo = async (bot: Telegraf<THelpUAContext>, chatId: number, uiLanguage: string) => {
+export const askForRole = async (bot: Telegraf<THelpUAContext>, chatId: number, uiLanguage: string) => {
   const roles = await getRoles(uiLanguage);
   const rows = roles.map(role => ({
     text: role.label,
@@ -29,16 +29,16 @@ const askForInfo = async (bot: Telegraf<THelpUAContext>, chatId: number, uiLangu
   });
 };
 
-const askForHelpType = async (
+export const askForCategory = async (
   bot: Telegraf<THelpUAContext>,
   chatId: number,
   uiLanguage: string,
   role: string
 ) => {
-  const helpTypes = await getCategories(uiLanguage, role);
-  const rows = helpTypes.map(helpType => ({
-    text: helpType.label,
-    callback_data: `help-type:${helpType.key}`
+  const categories = await getCategories(uiLanguage, role);
+  const rows = categories.map(category => ({
+    text: category.label,
+    callback_data: `help-type:${category.key}`
   }));
   bot.telegram.sendMessage(chatId, 'What do you need help with?', {
     reply_markup: {
@@ -47,8 +47,6 @@ const askForHelpType = async (
   });
 };
 
-const askToRestart = (ctx: THelpUAContext) => {
+export const askToRestart = (ctx: THelpUAContext) => {
   ctx.reply('Cannot process response, try /start again');
 };
-
-export { askForLanguage, askForInfo, askForHelpType, askToRestart };
