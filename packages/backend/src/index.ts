@@ -81,10 +81,6 @@ app.post('/register', async (req, res) => {
   }
 });
 
-app.get('/ping', (_, res) => {
-  res.end('pong');
-});
-
 app.listen(port, () => {
   console.log(`>> Backend ready at http://localhost:${port}`);
 });

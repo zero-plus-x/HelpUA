@@ -4,7 +4,6 @@ import dotenv from 'dotenv';
 import { THelpUAContext } from './shared/types';
 import { askForLanguage } from './questions';
 import { initAnswerListeners, initialSelection } from './answers';
-import fetch from 'node-fetch';
 
 dotenv.config({ path: `${__dirname}/../.env` });
 
@@ -33,12 +32,6 @@ bot.start(ctx => {
 });
 
 initAnswerListeners(bot);
-
-bot.command('ping', async ctx => {
-  const result = await fetch(`${process.env.BACKEND_HOST}/ping`);
-  const text = await result.text();
-  ctx.reply(text);
-});
 
 bot.launch().then(() => console.log('>> Bot ready'));
 
