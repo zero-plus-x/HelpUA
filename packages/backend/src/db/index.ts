@@ -3,29 +3,20 @@ import { UILanguage } from '@prisma/client';
 import { Answer, Selection } from '../bot/shared/types';
 import { CategoryTranslations, RoleTranslations, UILanguageLabels } from '../translations';
 
-const prisma = new PrismaClient();
+export const prisma = new PrismaClient();
 
 export const getUser = async (telegramUserId: number) => {
   return await prisma.user.findUnique({ where: { telegramUserId } })
 }
 
 export const register = async ({ telegramUserId, chatId, uiLanguage, telegramUsername}: Omit<User, 'id'>): Promise<User> => {
-  const user = await getUser(telegramUserId)
-  if (user != null) {
-    const updatedUser = await prisma.user.update({
-      where: { telegramUserId },
-      data: {
-        chatId, uiLanguage, telegramUsername
-      }
-    })
-    return updatedUser
-  }
-
-  const newUser = await prisma.user.create({
-    data: { chatId, telegramUserId, uiLanguage, telegramUsername }
+  const user = await prisma.user.upsert({
+    where: { telegramUserId },
+    update: { chatId, uiLanguage, telegramUsername },
+    create: { chatId, telegramUserId, uiLanguage, telegramUsername },
   });
 
-  return newUser
+  return user
 };
 
 export const getUILanguages = (): Answer[] => {
