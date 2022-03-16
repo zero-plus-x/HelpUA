@@ -9,7 +9,7 @@ Monorepo for the 0+X initiative: creating a telegram bot to match helpers with h
 ## Running locally
 
 create your own bot through https://t.me/BotFather
-add bot token to .env file in packages/bot (use sample.env as a reference)
+add bot token to .env file in packages/backend (use sample.env as a reference)
 
 ```
 docker-compose up
@@ -32,7 +32,5 @@ pnpm install
 
 Create .env files in each of the packages
 
-Use `pnpm start:bot` to start bot,
 Use `pnpm start:backend` to start backend
-
-Use `pnpm dev:{PACKAGE_NAME}` to run in dev mode
+Use `pnpm dev:backend` to run in dev mode
