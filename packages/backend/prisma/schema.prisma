@@ -31,37 +31,34 @@ enum Category {
   MEDICAL_HELP
 }
 
+enum Role {
+  HELPEE
+  HELPER
+}
+
 model User {
   id             Int        @id @default(autoincrement())
   telegramUserId Int        @unique
   chatId         Int
   uiLanguage     UILanguage
   offers         Offer[]
-  requests       Request[]
 }
 
 model Offer {
-  id         Int        @id @default(autoincrement())
-  user       User       @relation(fields: [userId], references: [id])
-  userId     Int
-  category   Category
-  languages  SpokenLanguage[]
-  matches    Match[]
-}
-
-model Request {
-  id         Int        @id @default(autoincrement())
-  user       User       @relation(fields: [userId], references: [id])
-  userId     Int
-  caterogy   Category
-  languages  SpokenLanguage[]
-  matches    Match[]
+  id        Int              @id @default(autoincrement())
+  user      User             @relation(fields: [userId], references: [id])
+  userId    Int
+  category  Category
+  languages SpokenLanguage[]
+  role      Role
+  helperMatches   Match[] @relation("Helper")
+  helpeeMatches   Match[] @relation("Helpee")
 }
 
 model Match {
-  id        Int     @id @default(autoincrement())
-  offer     Offer   @relation(fields: [offerId], references: [id])
-  offerId   Int
-  request   Request @relation(fields: [requestId], references: [id])
-  requestId Int
+  id            Int   @id @default(autoincrement())
+  helperOffer   Offer @relation("Helper", fields: [helperOfferId], references: [id])
+  helperOfferId Int
+  helpeeOffer   Offer @relation("Helpee", fields: [helpeeOfferId], references: [id])
+  helpeeOfferId Int
 }
