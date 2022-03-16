@@ -1,5 +1,6 @@
-import {Category, Role, UILanguage} from '@prisma/client';
+import {Category, UILanguage} from '@prisma/client';
 import { Context } from 'telegraf';
+import {Role} from '../../types';
 
 export type Selection = {
   uiLanguage: UILanguage | null;

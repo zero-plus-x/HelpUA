@@ -1,7 +1,8 @@
-import {Offer, Role, UILanguage} from "@prisma/client";
+import {Offer, Request, UILanguage} from "@prisma/client";
 import {splitEvery} from "ramda";
 import {ExtraReplyMessage} from "telegraf/typings/telegram-types"
 import {getCategories, getRoles, getUILanguages} from "../../db";
+import {Role} from "../../types";
 
 type Reply = {
   text: string,
@@ -60,15 +61,15 @@ export const getSelectCategoryReply = (uiLanguage: UILanguage): Reply => {
 }
 
 export const getOfferCreatedReply = (offer: Offer): Reply => {
-  if (offer.role === Role.HELPER) {
     return {
       text: 'We will get back to you when we find who you can help'
     }
-  } else {
+}
+
+export const getRequestCreatedReply = (request: Request): Reply => {
     return {
       text: 'We will try to find help as soon as possible'
     }
-  }
 }
 
 export const getNoUserNameErrorReply = (): Reply => {

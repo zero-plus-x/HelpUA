@@ -1,4 +1,5 @@
-import { UILanguage, Category, Role } from '@prisma/client';
+import { UILanguage, Category } from '@prisma/client';
+import { Role } from '../types';
 
 export const UILanguageLabels = {
     [UILanguage.ENGLISH]: 'English',
@@ -6,13 +7,14 @@ export const UILanguageLabels = {
     [UILanguage.RUSSIAN]: 'Русский язык',
 }
 
+console.log(Role)
 export const RoleTranslations = {
-  [Role.HELPEE]: {
+  [Role.HELPER]: {
     [UILanguage.ENGLISH]: 'I want to help',
     [UILanguage.UKRAINIAN]: 'Я можу допомогти',
     [UILanguage.RUSSIAN]: 'Я могу помочь',
   },
-  [Role.HELPER]: {
+  [Role.HELPEE]: {
     [UILanguage.ENGLISH]: 'I need help',
     [UILanguage.UKRAINIAN]: 'Мені потрібна допомога',
     [UILanguage.RUSSIAN]: 'Мне нужна помощь',

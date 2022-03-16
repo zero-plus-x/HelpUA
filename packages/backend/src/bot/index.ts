@@ -1,8 +1,9 @@
 import { Telegraf } from 'telegraf';
 import { HelpUAContext, Selection } from './shared/types';
-import { createOffer, register } from '../db';
+import { createOffer, createRequest, register } from '../db';
 import { isCategory, isRole, isUILanguage } from '../translations';
-import { getNoUserNameErrorReply, getOfferCreatedReply, getSelectCategoryReply, getSelectLanguageReply, getSelectRoleReply } from './replies';
+import { getNoUserNameErrorReply, getOfferCreatedReply, getRequestCreatedReply, getSelectCategoryReply, getSelectLanguageReply, getSelectRoleReply } from './replies';
+import {Role} from '../types';
 
 const initialSelection: Selection = {
   uiLanguage: null,
@@ -92,9 +93,16 @@ export const initListeners = (bot: Telegraf<HelpUAContext>) => {
     ctx.session.selection.category = category;
 
     const telegramUserId = ctx.update.callback_query.from.id
-    const offer = await createOffer(telegramUserId, ctx.session.selection)
+    if (ctx.session.selection.role === Role.HELPER) {
+      const offer = await createOffer(telegramUserId, ctx.session.selection)
 
-    const { text, extra } = getOfferCreatedReply(offer)
-    ctx.reply(text, extra)
+      const { text, extra } = getOfferCreatedReply(offer)
+      ctx.reply(text, extra)
+    } else {
+      const request = await createRequest(telegramUserId, ctx.session.selection)
+
+      const { text, extra } = getRequestCreatedReply(request)
+      ctx.reply(text, extra)
+    }
   });
 };
