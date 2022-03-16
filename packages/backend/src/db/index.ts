@@ -5,20 +5,27 @@ import { CategoryTranslations, RoleTranslations, UILanguageLabels } from '../tra
 
 const prisma = new PrismaClient();
 
-export const register = async ({ userId, chatId, uiLanguage}: { userId: number, chatId: number, uiLanguage: UILanguage }): Promise<User> => {
-  try {
-    // @NOTE: Dev only, this removes the user before storing to db, so it's easier to test locally
-    // @TODO: Remove later
-    await prisma.user.delete({ where: { telegramUserId: userId } });
-  } catch (e) {
-    console.log('First time user.');
+export const getUser = async (telegramUserId: number) => {
+  return await prisma.user.findUnique({ where: { telegramUserId } })
+}
+
+export const register = async ({ telegramUserId, chatId, uiLanguage}: { telegramUserId: number, chatId: number, uiLanguage: UILanguage }): Promise<User> => {
+  const user = await getUser(telegramUserId)
+  if (user != null) {
+    const updatedUser = await prisma.user.update({
+      where: { telegramUserId },
+      data: {
+        chatId, uiLanguage
+      }
+    })
+    return updatedUser
   }
 
-  const user = await prisma.user.create({
-    data: { chatId, telegramUserId: userId, uiLanguage }
+  const newUser = await prisma.user.create({
+    data: { chatId, telegramUserId, uiLanguage }
   });
 
-  return user
+  return newUser
 };
 
 export const getUILanguages = (): Answer[] => {
@@ -45,8 +52,20 @@ export const getCategories = (uiLanguage: UILanguage): Answer[] => {
   })
 };
 
-export const createOfferOrRequest = (selection: Selection) => {
-  console.log(selection)
+export const createOffer = async (telegramUserId: number, selection: Selection) => {
+  const user = await getUser(telegramUserId)
+  if (user == null || !selection.category || !selection.role) {
+    throw new Error('User not found')
+  }
+
+  const offer = await prisma.offer.create({
+    data: {
+      user: { connect: { id: user.id } },
+      category: selection.category,
+      role: selection.role,
+    }
+  })
+  return offer
 }
 
 // @TODO disconnect on shutdown or on error

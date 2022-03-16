@@ -1,8 +1,9 @@
 import { splitEvery } from 'ramda'
 import { Telegraf } from 'telegraf';
 import { HelpUAContext, Selection } from './shared/types';
-import { createOfferOrRequest, getCategories, getRoles, getUILanguages, register } from '../db';
+import { createOffer, getUser, register } from '../db';
 import { isCategory, isRole, isUILanguage } from '../translations';
+import {getOfferCreatedReply, getSelectCategoryReply, getSelectLanguageReply, getSelectRoleReply} from './replies';
 
 const initialSelection: Selection = {
   uiLanguage: null,
@@ -20,28 +21,14 @@ const getRestartMessage = () => {
   return 'Cannot process response, try /start again';
 };
 
-const withInitialSession = ({ selection, options }: WithDefaultSession): Selection => {
-  const selectionToReturn = typeof selection === 'object' ? selection : initialSelection
-  return { ...selectionToReturn, ...options };
-};
-
 export const initListeners = (bot: Telegraf<HelpUAContext>) => {
   // @TODO add middleware that will catch errors and reply with restart message
-  bot.start(ctx => {
+  bot.start(async ctx => {
     if (!ctx || !ctx.chat) return;
-
     ctx.session.selection = { ...initialSelection };
-    const uiLanguages = getUILanguages();
-    const rows = uiLanguages.map(({ key, label }) => ({
-      text: label,
-      callback_data: `ui-language:${key}`
-    }));
 
-    ctx.reply('Please select a language', {
-      reply_markup: {
-        inline_keyboard: [rows]
-      }
-    });
+    const { text, extra } = getSelectLanguageReply()
+    ctx.reply(text, extra)
   });
 
   bot.action(/ui-language:(.*)/, async ctx => {
@@ -55,25 +42,17 @@ export const initListeners = (bot: Telegraf<HelpUAContext>) => {
       return
     }
 
-    ctx.session.selection = withInitialSession({ selection: ctx.session.selection, options: { uiLanguage } });
-    const userId = ctx.update.callback_query.from.id
+    ctx.session.selection.uiLanguage = uiLanguage;
+    const telegramUserId = ctx.update.callback_query.from.id
 
     await register({
-      userId,
+      telegramUserId,
       uiLanguage,
       chatId: ctx.chat.id
     });
 
-    const roles = getRoles(uiLanguage);
-    const rows = roles.map(role => ({
-      text: role.label,
-      callback_data: `role:${role.key}`
-    }));
-    ctx.reply('Please select an option', {
-      reply_markup: {
-        inline_keyboard: [rows]
-      }
-    });
+    const { text, extra } = getSelectRoleReply(uiLanguage)
+    ctx.reply(text, extra);
   });
 
   bot.action(/role:(.*)/, ctx => {
@@ -89,17 +68,9 @@ export const initListeners = (bot: Telegraf<HelpUAContext>) => {
     }
 
     ctx.session.selection.role = role;
-    const categories = getCategories(uiLanguage);
-    const rows = categories.map(category => ({
-      text: category.label,
-      callback_data: `help-type:${category.key}`
-    }));
 
-    ctx.reply('What do you need help with?', {
-      reply_markup: {
-        inline_keyboard: splitEvery(3, rows)
-      }
-    });
+    const { text, extra } = getSelectCategoryReply(uiLanguage)
+    ctx.reply(text, extra);
   });
 
   bot.action(/help-type:(.*)/, async ctx => {
@@ -114,6 +85,11 @@ export const initListeners = (bot: Telegraf<HelpUAContext>) => {
     }
 
     ctx.session.selection.category = category;
-    createOfferOrRequest(ctx.session.selection)
+
+    const telegramUserId = ctx.update.callback_query.from.id
+    const offer = await createOffer(telegramUserId, ctx.session.selection)
+
+    const { text, extra } = getOfferCreatedReply(offer)
+    ctx.reply(text, extra)
   });
 };

@@ -1,9 +1,4 @@
-import { UILanguage, Category } from '@prisma/client';
-
-export enum Role {
-  HELPEE = 'HELPEE',
-  HELPER = 'HELPER',
-}
+import { UILanguage, Category, Role } from '@prisma/client';
 
 export const UILanguageLabels = {
     [UILanguage.ENGLISH]: 'English',
