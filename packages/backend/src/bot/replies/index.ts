@@ -50,7 +50,7 @@ export const getSelectCategoryReply = (uiLanguage: UILanguage): Reply => {
   }));
 
   return {
-    text: 'What do you need help with?', 
+    text: 'What category?', 
     extra: {
       reply_markup: {
         inline_keyboard: splitEvery(3, rows)
@@ -68,5 +68,11 @@ export const getOfferCreatedReply = (offer: Offer): Reply => {
     return {
       text: 'We will try to find help as soon as possible'
     }
+  }
+}
+
+export const getNoUserNameErrorReply = (): Reply => {
+  return {
+    text: 'In order to use this bot you need to have a username. You can add it in the settings.'
   }
 }

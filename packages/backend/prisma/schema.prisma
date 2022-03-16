@@ -37,22 +37,23 @@ enum Role {
 }
 
 model User {
-  id             Int        @id @default(autoincrement())
-  telegramUserId Int        @unique
-  chatId         Int
-  uiLanguage     UILanguage
-  offers         Offer[]
+  id               Int        @id @default(autoincrement())
+  telegramUserId   Int        @unique
+  telegramUsername String?
+  chatId           Int
+  uiLanguage       UILanguage
+  offers           Offer[]
 }
 
 model Offer {
-  id        Int              @id @default(autoincrement())
-  user      User             @relation(fields: [userId], references: [id])
-  userId    Int
-  category  Category
-  languages SpokenLanguage[]
-  role      Role
-  helperMatches   Match[] @relation("Helper")
-  helpeeMatches   Match[] @relation("Helpee")
+  id            Int              @id @default(autoincrement())
+  user          User             @relation(fields: [userId], references: [id])
+  userId        Int
+  category      Category
+  languages     SpokenLanguage[]
+  role          Role
+  helperMatches Match[]          @relation("Helper")
+  helpeeMatches Match[]          @relation("Helpee")
 }
 
 model Match {

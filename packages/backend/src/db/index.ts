@@ -1,6 +1,8 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Role, User } from '@prisma/client';
 import { UILanguage } from '@prisma/client';
-import { Answer, Selection, User } from '../bot/shared/types';
+import { uniqBy } from 'ramda';
+import { bot } from '../bot/bot';
+import { Answer, Selection } from '../bot/shared/types';
 import { CategoryTranslations, RoleTranslations, UILanguageLabels } from '../translations';
 
 const prisma = new PrismaClient();
@@ -9,20 +11,20 @@ export const getUser = async (telegramUserId: number) => {
   return await prisma.user.findUnique({ where: { telegramUserId } })
 }
 
-export const register = async ({ telegramUserId, chatId, uiLanguage}: { telegramUserId: number, chatId: number, uiLanguage: UILanguage }): Promise<User> => {
+export const register = async ({ telegramUserId, chatId, uiLanguage, telegramUsername}: Omit<User, 'id'>): Promise<User> => {
   const user = await getUser(telegramUserId)
   if (user != null) {
     const updatedUser = await prisma.user.update({
       where: { telegramUserId },
       data: {
-        chatId, uiLanguage
+        chatId, uiLanguage, telegramUsername
       }
     })
     return updatedUser
   }
 
   const newUser = await prisma.user.create({
-    data: { chatId, telegramUserId, uiLanguage }
+    data: { chatId, telegramUserId, uiLanguage, telegramUsername }
   });
 
   return newUser
@@ -52,6 +54,11 @@ export const getCategories = (uiLanguage: UILanguage): Answer[] => {
   })
 };
 
+const MapToOppositeRole = {
+  [Role.HELPEE]: Role.HELPER,
+  [Role.HELPER]: Role.HELPEE
+}
+
 export const createOffer = async (telegramUserId: number, selection: Selection) => {
   const user = await getUser(telegramUserId)
   if (user == null || !selection.category || !selection.role) {
@@ -65,6 +72,26 @@ export const createOffer = async (telegramUserId: number, selection: Selection) 
       role: selection.role,
     }
   })
+
+  // temporary
+  const possibleMatches = await prisma.offer.findMany({
+    where: {
+      category: selection.category,
+      role: MapToOppositeRole[selection.role]
+    },
+    include: {
+      user: true
+    }
+  })
+
+
+  const users = uniqBy((user) => user.id, possibleMatches.map(match => match.user))
+  users.forEach(user => {
+    bot.telegram.sendMessage(user.chatId, `found you a match - @${user.telegramUsername}`)
+  })
+  console.log(users)
+  // temporary-end
+
   return offer
 }
 

@@ -1,21 +1,14 @@
-import { splitEvery } from 'ramda'
 import { Telegraf } from 'telegraf';
 import { HelpUAContext, Selection } from './shared/types';
-import { createOffer, getUser, register } from '../db';
+import { createOffer, register } from '../db';
 import { isCategory, isRole, isUILanguage } from '../translations';
-import {getOfferCreatedReply, getSelectCategoryReply, getSelectLanguageReply, getSelectRoleReply} from './replies';
+import { getNoUserNameErrorReply, getOfferCreatedReply, getSelectCategoryReply, getSelectLanguageReply, getSelectRoleReply } from './replies';
 
 const initialSelection: Selection = {
   uiLanguage: null,
   role: null,
   category: null
 };
-
-type WithDefaultSession = {
-  selection?: Selection;
-  options: Record<string, any>;
-}
-
 
 const getRestartMessage = () => {
   return 'Cannot process response, try /start again';
@@ -25,6 +18,11 @@ export const initListeners = (bot: Telegraf<HelpUAContext>) => {
   // @TODO add middleware that will catch errors and reply with restart message
   bot.start(async ctx => {
     if (!ctx || !ctx.chat) return;
+    if (!ctx.update.message.from.username) {
+      const { text, extra } = getNoUserNameErrorReply();
+      ctx.reply(text, extra)
+      return
+    }
     ctx.session.selection = { ...initialSelection };
 
     const { text, extra } = getSelectLanguageReply()
@@ -33,6 +31,12 @@ export const initListeners = (bot: Telegraf<HelpUAContext>) => {
 
   bot.action(/ui-language:(.*)/, async ctx => {
     if (!ctx || !ctx.chat) return;
+    const telegramUsername = ctx.update.callback_query.from.username
+    if (!telegramUsername) {
+      const { text, extra } = getNoUserNameErrorReply();
+      ctx.reply(text, extra)
+      return
+    }
 
     const uiLanguage = ctx.match[1];
 
@@ -47,6 +51,7 @@ export const initListeners = (bot: Telegraf<HelpUAContext>) => {
 
     await register({
       telegramUserId,
+      telegramUsername,
       uiLanguage,
       chatId: ctx.chat.id
     });

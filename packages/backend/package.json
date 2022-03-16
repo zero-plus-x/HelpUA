@@ -22,7 +22,6 @@
   "dependencies": {
     "@prisma/client": "^3.10.0",
     "debug": "^4.3.3",
-    "dotenv": "^16.0.0",
     "prisma": "^3.10.0",
     "ramda": "^0.28.0",
     "telegraf": "^4.7.0",
