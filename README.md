@@ -16,21 +16,10 @@ docker-compose up
 docker exec helpua_backend_1 pnpm migrate:deploy
 ```
 
-## Running without Docker
-
-We use `pnpm`, so if you don't have it installed - install
+To have proper types in your editor, you need to install dependecies and generate prisma types
 
 ```
-npm i -g pnpm
+pnpm i
+cd packages/backend
+pnpm prisma generate
 ```
-
-Then run
-
-```
-pnpm install
-```
-
-Create .env files in each of the packages
-
-Use `pnpm start:backend` to start backend
-Use `pnpm dev:backend` to run in dev mode
