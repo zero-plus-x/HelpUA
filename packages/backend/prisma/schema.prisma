@@ -49,7 +49,7 @@ model Offer {
   category           Category
   languages          SpokenLanguage[]
   candidateRequests  Request[]        @relation("OfferToRequestCandidate")
-  matchedRequest     Request?
+  matchedRequest     Request[]
 }
 
 model Request {
