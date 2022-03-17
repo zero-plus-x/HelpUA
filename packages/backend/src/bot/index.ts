@@ -122,8 +122,12 @@ export const initListeners = (bot: Telegraf<HelpUAContext>) => {
       throw new ValidationError("Validation failed on match")
     }
 
-
-    const { requestUser, offerUser } = await createMatch(offerId, requestId, telegramUserId)
-    ctx.telegram.sendMessage(requestUser.chatId, `We found someone who wants to help you, message them on: @${offerUser.telegramUsername}`)
+    try {
+      const { requestUser, offerUser } = await createMatch(offerId, requestId, telegramUserId)
+      ctx.telegram.sendMessage(requestUser.chatId, `We found someone who wants to help you, message them on: @${offerUser.telegramUsername}`)
+      ctx.telegram.sendMessage(telegramUserId, 'We shared your username with them, expect a message soon')
+    } catch (e) {
+      ctx.telegram.sendMessage(telegramUserId, 'Someone else already offered their help')
+    }
   });
 };

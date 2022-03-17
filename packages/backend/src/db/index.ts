@@ -81,7 +81,7 @@ export const findRequestCandidates = async (): Promise<Candidates> => {
   const result: Candidates = []
   const requests = await prisma.request.findMany({
     where: {
-      matchedOfferId: null // @TODO check if this works
+      matchedOfferId: null
     },
     orderBy: {
       dateCreated: 'asc',
@@ -92,7 +92,7 @@ export const findRequestCandidates = async (): Promise<Candidates> => {
     debounceDate.setMinutes(debounceDate.getMinutes() - 5)
 
     const offers = await prisma.offer.findMany({
-      take: 1, // @TODO increase this value
+      take: 5,
       where: {
         OR: [{
           lastCandidateFound: {
@@ -155,12 +155,13 @@ export const createMatch = async (offerId: number, requestId: number, telegramUs
     throw new ValidationError('Validation error: offer is not a candidate')
   }
   if (request.matchedOfferId != null) {
-    throw new ValidationError('Validation error: offer already matched')
+    throw new ValidationError('Validation error: request already matched')
   }
 
-  await prisma.request.update({
+  const updatedRequest = await prisma.request.update({
     where: {
       id: requestId,
+      matchedOfferId: undefined,
     },
     data: {
       matchedOfferId: offerId
@@ -171,7 +172,7 @@ export const createMatch = async (offerId: number, requestId: number, telegramUs
   })
 
   return {
-    requestUser: request.user,
+    requestUser: updatedRequest.user,
     offerUser: offer.user
   }
 }

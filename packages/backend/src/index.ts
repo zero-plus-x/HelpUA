@@ -12,7 +12,6 @@ bot.launch().then(() => console.log('>> Bot ready'));
 
 app.get('/', async (_, res) => {
   const candidates = await findRequestCandidates()
-  console.log(candidates)
   for (let { offers, request } of candidates) {
     for (let offer of offers) {
       const { text, extra } = getCandidateMessage(offer, request)
