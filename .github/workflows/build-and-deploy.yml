@@ -72,7 +72,7 @@ jobs:
             docker rm $(echo $IMAGE_NAME)
             # Run a new container from a new image
             docker run -d \
-            --expose 3000 \
+            --p 3000:3000 \
             --env TELEGRAM_BOT_TOKEN=${{ secrets.TELEGRAM_BOT_TOKEN }} \
             --env DATABASE_URL=${{ secrets.DATABASE_URL }} \
             --restart always \
