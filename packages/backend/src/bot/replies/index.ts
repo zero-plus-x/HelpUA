@@ -1,8 +1,8 @@
-import {Offer, Request, UILanguage} from "@prisma/client";
+import {Offer, Request, UILanguage, User} from "@prisma/client";
 import {splitEvery} from "ramda";
 import {ExtraReplyMessage} from "telegraf/typings/telegram-types"
 import {getCategories, getRoles, getUILanguages} from "../../db";
-import {Role} from "../../types";
+import {CategoryTranslations} from "../../translations";
 
 type Reply = {
   text: string,
@@ -75,5 +75,18 @@ export const getRequestCreatedReply = (request: Request): Reply => {
 export const getNoUserNameErrorReply = (): Reply => {
   return {
     text: 'In order to use this bot you need to have a username. You can add it in the settings.'
+  }
+}
+
+export const getCandidateMessage = (offer: Offer & { user: User }, request: Request): Reply => {
+  const rows = [{ text: 'I want to help', callback_data: `match:${offer.id}:${request.id}` }]
+
+  return {
+    text: `Found a candidate with category ${CategoryTranslations[request.category][offer.user.uiLanguage]}`,
+    extra: {
+      reply_markup: {
+        inline_keyboard: [rows]
+      }
+    }
   }
 }

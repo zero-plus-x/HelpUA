@@ -42,19 +42,24 @@ model User {
 }
 
 model Offer {
-  id                Int              @id @default(autoincrement())
-  user              User             @relation(fields: [userId], references: [id])
-  userId            Int
-  category          Category
-  languages         SpokenLanguage[]
-  candidateRequests Request[]        @relation("OfferToRequestCandidate")
+  id                 Int              @id @default(autoincrement())
+  user               User             @relation(fields: [userId], references: [id])
+  lastCandidateFound DateTime?
+  userId             Int
+  category           Category
+  languages          SpokenLanguage[]
+  candidateRequests  Request[]        @relation("OfferToRequestCandidate")
+  matchedRequest     Request?
 }
 
 model Request {
   id              Int              @id @default(autoincrement())
   user            User             @relation(fields: [userId], references: [id])
   userId          Int
+  dateCreated     DateTime         @default(now())
   category        Category
   languages       SpokenLanguage[]
   candidateOffers Offer[]          @relation("OfferToRequestCandidate")
+  matchedOffer    Offer?           @relation(fields: [matchedOfferId], references: [id])
+  matchedOfferId  Int?             @unique
 }

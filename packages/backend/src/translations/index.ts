@@ -7,7 +7,6 @@ export const UILanguageLabels = {
     [UILanguage.RUSSIAN]: 'Русский язык',
 }
 
-console.log(Role)
 export const RoleTranslations = {
   [Role.HELPER]: {
     [UILanguage.ENGLISH]: 'I want to help',

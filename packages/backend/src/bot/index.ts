@@ -1,9 +1,10 @@
 import { Telegraf } from 'telegraf';
 import { HelpUAContext, Selection } from './shared/types';
-import { createOffer, createRequest, register } from '../db';
+import { createMatch, createOffer, createRequest, register } from '../db';
 import { isCategory, isRole, isUILanguage } from '../translations';
 import { getNoUserNameErrorReply, getOfferCreatedReply, getRequestCreatedReply, getSelectCategoryReply, getSelectLanguageReply, getSelectRoleReply } from './replies';
 import {Role} from '../types';
+import {ValidationError} from '../error';
 
 const initialSelection: Selection = {
   uiLanguage: null,
@@ -16,7 +17,16 @@ const getRestartMessage = () => {
 };
 
 export const initListeners = (bot: Telegraf<HelpUAContext>) => {
-  // @TODO add middleware that will catch errors and reply with restart message
+  bot.catch(async (err, ctx) => {
+    if (err instanceof ValidationError) {
+      console.error(err)
+      ctx.reply(getRestartMessage())
+      return
+    }
+
+    throw err
+  })
+
   bot.start(async ctx => {
     if (!ctx || !ctx.chat) return;
     if (!ctx.update.message.from.username) {
@@ -42,9 +52,7 @@ export const initListeners = (bot: Telegraf<HelpUAContext>) => {
     const uiLanguage = ctx.match[1];
 
     if (uiLanguage == null || !isUILanguage(uiLanguage)) {
-      console.error("Validation failed on ui-language")
-      ctx.reply(getRestartMessage())
-      return
+      throw new ValidationError("Validation failed on ui-language")
     }
 
     ctx.session.selection.uiLanguage = uiLanguage;
@@ -68,9 +76,7 @@ export const initListeners = (bot: Telegraf<HelpUAContext>) => {
     const role = ctx.match[1];
 
     if (!role || uiLanguage == null || !ctx.session.selection || !isUILanguage(uiLanguage) || !isRole(role)) {
-      console.error("Validation failed on role", role)
-      ctx.reply(getRestartMessage())
-      return;
+      throw new ValidationError(`Validation failed on role ${role}`)
     }
 
     ctx.session.selection.role = role;
@@ -85,9 +91,7 @@ export const initListeners = (bot: Telegraf<HelpUAContext>) => {
     const category = ctx.match[1];
 
     if (!category || !ctx.session.selection || !isCategory(category)) {
-      console.error("Validation failed on help-type")
-      ctx.reply(getRestartMessage())
-      return;
+      throw new ValidationError("Validation failed on help-type")
     }
 
     ctx.session.selection.category = category;
@@ -104,5 +108,22 @@ export const initListeners = (bot: Telegraf<HelpUAContext>) => {
       const { text, extra } = getRequestCreatedReply(request)
       ctx.reply(text, extra)
     }
+  });
+
+
+  bot.action(/match:(.*):(.*)/, async ctx => {
+    if (!ctx || !ctx.chat) return;
+
+    const offerId = parseInt(ctx.match[1], 10);
+    const requestId = parseInt(ctx.match[2], 10);
+    const telegramUserId = ctx.update.callback_query.from.id
+
+    if (!offerId || !requestId) {
+      throw new ValidationError("Validation failed on match")
+    }
+
+
+    const { requestUser, offerUser } = await createMatch(offerId, requestId, telegramUserId)
+    ctx.telegram.sendMessage(requestUser.chatId, `We found someone who wants to help you, message them on: @${offerUser.telegramUsername}`)
   });
 };
