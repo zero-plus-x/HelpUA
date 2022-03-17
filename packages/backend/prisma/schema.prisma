@@ -44,12 +44,14 @@ model User {
 model Offer {
   id                 Int              @id @default(autoincrement())
   user               User             @relation(fields: [userId], references: [id])
-  lastCandidateFound DateTime?
   userId             Int
+  lastCandidateFound DateTime?
   category           Category
   languages          SpokenLanguage[]
   candidateRequests  Request[]        @relation("OfferToRequestCandidate")
   matchedRequest     Request[]
+
+  @@unique([userId, category])
 }
 
 model Request {
@@ -62,4 +64,5 @@ model Request {
   candidateOffers Offer[]          @relation("OfferToRequestCandidate")
   matchedOffer    Offer?           @relation(fields: [matchedOfferId], references: [id])
   matchedOfferId  Int?             @unique
+  @@unique([userId, category])
 }

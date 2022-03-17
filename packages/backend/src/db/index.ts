@@ -51,8 +51,17 @@ export const createOffer = async (telegramUserId: number, selection: Selection) 
     throw new ValidationError('User not found')
   }
 
-  const offer = await prisma.offer.create({
-    data: {
+  const offer = await prisma.offer.upsert({
+    where: {
+      userId_category: {
+        userId: user.id,
+        category: selection.category
+      }
+    },
+    update: {
+      category: selection.category,
+    },
+    create: {
       user: { connect: { id: user.id } },
       category: selection.category,
     }
@@ -67,11 +76,20 @@ export const createRequest = async (telegramUserId: number, selection: Selection
     throw new ValidationError('User not found')
   }
 
-  const offer = await prisma.request.create({
-    data: {
-      user: { connect: { id: user.id } },
+  const offer = await prisma.request.upsert({
+    where: {
+      userId_category: {
+        userId: user.id,
+        category: selection.category
+      }
+    },
+    update: {
       category: selection.category,
     },
+    create: {
+      user: { connect: { id: user.id } },
+      category: selection.category,
+    }
   })
 
   return offer

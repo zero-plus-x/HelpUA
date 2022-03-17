@@ -5,6 +5,7 @@ import { isCategory, isRole, isUILanguage } from '../translations';
 import { getNoUserNameErrorReply, getOfferCreatedReply, getRequestCreatedReply, getSelectCategoryReply, getSelectLanguageReply, getSelectRoleReply } from './replies';
 import {Role} from '../types';
 import {ValidationError} from '../error';
+import {UILanguage} from '@prisma/client';
 
 const initialSelection: Selection = {
   uiLanguage: null,
@@ -15,6 +16,10 @@ const initialSelection: Selection = {
 const getRestartMessage = () => {
   return 'Cannot process response, try /start again';
 };
+
+const getInitialSelection = (overrides?: Selection) => {
+  return {...initialSelection, ...overrides}
+}
 
 export const initListeners = (bot: Telegraf<HelpUAContext>) => {
   bot.catch(async (err, ctx) => {
@@ -30,11 +35,11 @@ export const initListeners = (bot: Telegraf<HelpUAContext>) => {
   bot.start(async ctx => {
     if (!ctx || !ctx.chat) return;
     if (!ctx.update.message.from.username) {
-      const { text, extra } = getNoUserNameErrorReply();
+      const { text, extra } = getNoUserNameErrorReply(UILanguage.ENGLISH);
       ctx.reply(text, extra)
       return
     }
-    ctx.session.selection = { ...initialSelection };
+    ctx.session.selection = getInitialSelection(ctx.session.selection);
 
     const { text, extra } = getSelectLanguageReply()
     ctx.reply(text, extra)
@@ -43,17 +48,17 @@ export const initListeners = (bot: Telegraf<HelpUAContext>) => {
   bot.action(/ui-language:(.*)/, async ctx => {
     if (!ctx || !ctx.chat) return;
     const telegramUsername = ctx.update.callback_query.from.username
+
+    const uiLanguage = ctx.match[1];
+    if (uiLanguage == null || !isUILanguage(uiLanguage)) {
+      throw new ValidationError("Validation failed on ui-language")
+    }
     if (!telegramUsername) {
-      const { text, extra } = getNoUserNameErrorReply();
+      const { text, extra } = getNoUserNameErrorReply(uiLanguage);
       ctx.reply(text, extra)
       return
     }
 
-    const uiLanguage = ctx.match[1];
-
-    if (uiLanguage == null || !isUILanguage(uiLanguage)) {
-      throw new ValidationError("Validation failed on ui-language")
-    }
 
     ctx.session.selection.uiLanguage = uiLanguage;
     const telegramUserId = ctx.update.callback_query.from.id
@@ -90,7 +95,9 @@ export const initListeners = (bot: Telegraf<HelpUAContext>) => {
 
     const category = ctx.match[1];
 
-    if (!category || !ctx.session.selection || !isCategory(category)) {
+    const uiLanguage = ctx.session.selection.uiLanguage;
+
+    if (!category || !ctx.session.selection || !isCategory(category) || !uiLanguage) {
       throw new ValidationError("Validation failed on help-type")
     }
 
@@ -98,14 +105,14 @@ export const initListeners = (bot: Telegraf<HelpUAContext>) => {
 
     const telegramUserId = ctx.update.callback_query.from.id
     if (ctx.session.selection.role === Role.HELPER) {
-      const offer = await createOffer(telegramUserId, ctx.session.selection)
+      await createOffer(telegramUserId, ctx.session.selection)
 
-      const { text, extra } = getOfferCreatedReply(offer)
+      const { text, extra } = getOfferCreatedReply(uiLanguage)
       ctx.reply(text, extra)
     } else {
-      const request = await createRequest(telegramUserId, ctx.session.selection)
+      await createRequest(telegramUserId, ctx.session.selection)
 
-      const { text, extra } = getRequestCreatedReply(request)
+      const { text, extra } = getRequestCreatedReply(uiLanguage)
       ctx.reply(text, extra)
     }
   });
