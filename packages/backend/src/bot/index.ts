@@ -1,14 +1,14 @@
-import { Telegraf } from 'telegraf';
+import { Scenes, Telegraf } from 'telegraf';
 import { HelpUAContext, Selection } from './shared/types';
 import { createMatch, createOffer, createRequest, register } from '../db';
 import { isCategory, isRole, isUILanguage } from '../translations';
-import { getNoUserNameErrorReply, getOfferCreatedReply, getRequestCreatedReply, getSelectCategoryReply, getSelectLanguageReply, getSelectRoleReply } from './replies';
-import {Role} from '../types';
+import { getNoUserNameErrorReply, getOfferCreatedReply, getRequestCreatedReply, getSelectCategoryReply, getSelectLanguageReply, getStartReply } from './replies';
+import {Role, UILanguage} from '../types';
 import {ValidationError} from '../error';
-import {UILanguage} from '@prisma/client';
+import {BaseScene, Stage} from 'telegraf/typings/scenes';
 
 const initialSelection: Selection = {
-  uiLanguage: null,
+  uiLanguage: UILanguage.ENGLISH,
   role: null,
   category: null
 };
@@ -41,39 +41,48 @@ export const initListeners = (bot: Telegraf<HelpUAContext>) => {
     }
     ctx.session.selection = getInitialSelection(ctx.session.selection);
 
+    const telegramUserId = ctx.update.message.from.id
+
+    await register({
+      telegramUserId,
+      chatId: ctx.chat.id
+    });
+
+    const { text, extra } = getStartReply(ctx.session.selection.uiLanguage)
+    ctx.reply(text, extra)
+  });
+
+  bot.action('change-language', async ctx => {
     const { text, extra } = getSelectLanguageReply()
     ctx.reply(text, extra)
   });
 
   bot.action(/ui-language:(.*)/, async ctx => {
     if (!ctx || !ctx.chat) return;
-    const telegramUsername = ctx.update.callback_query.from.username
 
     const uiLanguage = ctx.match[1];
     if (uiLanguage == null || !isUILanguage(uiLanguage)) {
       throw new ValidationError("Validation failed on ui-language")
     }
-    if (!telegramUsername) {
-      const { text, extra } = getNoUserNameErrorReply(uiLanguage);
-      ctx.reply(text, extra)
-      return
-    }
-
 
     ctx.session.selection.uiLanguage = uiLanguage;
-    const telegramUserId = ctx.update.callback_query.from.id
 
-    await register({
-      telegramUserId,
-      telegramUsername,
-      uiLanguage,
-      chatId: ctx.chat.id
-    });
 
-    const { text, extra } = getSelectRoleReply(uiLanguage)
+    const { text, extra } = getStartReply(uiLanguage)
     ctx.reply(text, extra);
   });
+  const scene = new Scenes.WizardScene('REQUEST_OR_ORDER_CREATION',
+    (ctx) => {
+      ctx.reply('test')
+      ctx.wizard.next()
+    },
+    (ctx) => {
+      return ctx.scene.leave()
+    }
+  )
 
+  const stage = new Stage([scene])
+  // bot.use(stage.middleware());
   bot.action(/role:(.*)/, ctx => {
     if (!ctx || !ctx.chat) return;
 

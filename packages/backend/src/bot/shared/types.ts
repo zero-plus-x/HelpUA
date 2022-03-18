@@ -1,20 +1,20 @@
-import {Category, UILanguage} from '@prisma/client';
+import {Category} from '@prisma/client';
 import { Context } from 'telegraf';
-import {Role} from '../../types';
+import {Role, UILanguage} from '../../types';
 
 export type Selection = {
-  uiLanguage: UILanguage | null;
+  uiLanguage: UILanguage;
   role: Role | null;
   category: Category | null;
 };
 
-export type Session = {
+
+export type HelpUAContext = Context & {
   session: {
     selection: Selection;
   };
 };
 
-export type HelpUAContext = Context & Session;
 
 export type Answer = {
   key: string;

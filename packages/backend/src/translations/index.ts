@@ -1,11 +1,5 @@
-import { UILanguage, Category } from '@prisma/client';
-import { Role } from '../types';
-
-export const BotOptionQuestion = {
-  [UILanguage.ENGLISH]: 'Please select an option',
-  [UILanguage.UKRAINIAN]: 'Виберіть варіант',
-  [UILanguage.RUSSIAN]: 'Пожалуйста, выберите опцию',
-}
+import { Category } from '@prisma/client';
+import { Role, UILanguage } from '../types';
 
 export const BotCategoryQuestion = {
   [UILanguage.ENGLISH]: 'What category?',
@@ -51,30 +45,15 @@ export const RoleTranslations = {
 }
 
 export const CategoryTranslations = {
-  [Category.URGENT_CARE]: {
-    [UILanguage.ENGLISH]: 'Urgent help',
-    [UILanguage.UKRAINIAN]: 'Невідкладна допомога',
-    [UILanguage.RUSSIAN]: 'Срочная помощь',
-  },
-  [Category.TRANSPORTATION]: {
-    [UILanguage.ENGLISH]: 'Transportation',
-    [UILanguage.UKRAINIAN]: 'Перевезення',
-    [UILanguage.RUSSIAN]: 'Транспорт',
-  },
   [Category.LOCAL_INFORMATION]: {
     [UILanguage.ENGLISH]: 'Local information',
     [UILanguage.UKRAINIAN]: 'Місцева інформація',
     [UILanguage.RUSSIAN]: 'Местная информация',
   },
-  [Category.ACCOMODATION]: {
-    [UILanguage.ENGLISH]: 'Accommodation',
-    [UILanguage.UKRAINIAN]: 'Проживання',
-    [UILanguage.RUSSIAN]: 'Жилье',
-  },
-  [Category.MEDICAL_HELP]: {
-    [UILanguage.ENGLISH]: 'Medical help',
-    [UILanguage.UKRAINIAN]: 'Медична допомога',
-    [UILanguage.RUSSIAN]: 'Медицинская помощь',
+  [Category.TEXT_TRANSLATION]: {
+    [UILanguage.ENGLISH]: 'Text translation',
+    [UILanguage.UKRAINIAN]: 'Переклад тексту',
+    [UILanguage.RUSSIAN]: 'Перевод текста',
   },
 }
 

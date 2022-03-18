@@ -1,13 +1,28 @@
-import {Offer, Request, UILanguage, User} from "@prisma/client";
-import {splitEvery} from "ramda";
+import {Offer, Request, User} from "@prisma/client";
 import {Markup} from "telegraf";
 import {ExtraReplyMessage} from "telegraf/typings/telegram-types"
 import {getCategories, getRoles, getUILanguages} from "../../db";
-import {BotCategoryQuestion, BotNoUserNameErrorReply, BotOfferCreatedReply, BotOptionQuestion, BotRequestCreatedReply, CategoryTranslations} from "../../translations";
+import {BotCategoryQuestion, BotNoUserNameErrorReply, BotOfferCreatedReply, BotRequestCreatedReply, CategoryTranslations} from "../../translations";
+import {UILanguage} from "../../types";
 
 type Reply = {
   text: string,
   extra?: ExtraReplyMessage
+}
+
+export const getStartReply = (uiLanguage: UILanguage): Reply => {
+  const roles = getRoles(uiLanguage);
+  const rows = [
+    [Markup.button.callback('Change language', 'change-language')],
+    roles.map(role => {
+      return Markup.button.callback(role.label, `role:${role.key}`)
+    }),
+  ]
+
+  return {
+    text: 'Hello, this bot is created to help Ukrainian refugees',
+    extra: Markup.inlineKeyboard(rows)
+  }
 }
 
 export const getSelectLanguageReply = (): Reply => {
@@ -22,18 +37,6 @@ export const getSelectLanguageReply = (): Reply => {
   }
 }
 
-export const getSelectRoleReply = (uiLanguage: UILanguage): Reply => {
-  const roles = getRoles(uiLanguage);
-  const rows = roles.map(role => {
-    return Markup.button.callback(role.label, `role:${role.key}`)
-  });
-
-  return {
-    text: BotOptionQuestion[uiLanguage],
-    extra: Markup.inlineKeyboard(rows)
-  }
-}
-
 export const getSelectCategoryReply = (uiLanguage: UILanguage): Reply => {
   const categories = getCategories(uiLanguage);
   const rows = categories.map(category => {
@@ -42,7 +45,7 @@ export const getSelectCategoryReply = (uiLanguage: UILanguage): Reply => {
 
   return {
     text: BotCategoryQuestion[uiLanguage], 
-    extra: Markup.inlineKeyboard(splitEvery(3, rows))
+    extra: Markup.inlineKeyboard(rows)
   };
 }
 
