@@ -89,10 +89,13 @@ export const initListeners = (bot: Telegraf<HelpUAContext>) => {
 
     try {
       const { requestUser, offerUser } = await createMatch(offerId, requestId, telegramUserId)
-      // ctx.telegram.sendMessage(requestUser.chatId, `We found someone who wants to help you, message them on: @${offerUser.telegramUsername}`)
-      // ctx.telegram.sendMessage(telegramUserId, 'We shared your username with them, expect a message soon')
+      ctx.telegram.sendMessage(requestUser.chatId, `We found someone who wants to help you, we will forward their messages to you, you can stop anytime, just type /stop`)
+      ctx.telegram.sendMessage(telegramUserId, 'The chat has started, say hi')
     } catch (e) {
       ctx.telegram.sendMessage(telegramUserId, 'Someone else already offered their help')
     }
   });
+
+  // next: change registration so user has the offer or request in the same table, and matchedUserId as a reference.
+  bot.on('text', ctx => ctx.reply(ctx.message.text))
 };
