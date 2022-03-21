@@ -40,7 +40,7 @@ export const getSelectLanguageReply = (): Reply => {
 export const getSelectCategoryReply = (uiLanguage: UILanguage): Reply => {
   const categories = getCategories(uiLanguage);
   const rows = categories.map(category => {
-    return Markup.button.callback(category.label, `help-type:${category.key}`)
+    return Markup.button.callback(category.label, category.key)
   });
 
   return {

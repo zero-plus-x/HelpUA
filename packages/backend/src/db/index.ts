@@ -1,9 +1,8 @@
 import { PrismaClient, User } from '@prisma/client';
-import { UILanguage } from '@prisma/client';
 import { Answer, Selection } from '../bot/shared/types';
 import {ValidationError} from '../error';
 import { CategoryTranslations, RoleTranslations, UILanguageLabels } from '../translations';
-import {Candidates} from "../types"
+import {Candidates, UILanguage} from "../types"
 
 export const prisma = new PrismaClient();
 
