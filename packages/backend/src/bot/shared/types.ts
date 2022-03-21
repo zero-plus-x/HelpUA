@@ -1,5 +1,5 @@
 import {Category} from '@prisma/client';
-import { Context } from 'telegraf';
+import { Context, Scenes } from 'telegraf';
 import {Role, UILanguage} from '../../types';
 
 export type Selection = {
@@ -9,10 +9,14 @@ export type Selection = {
 };
 
 
+type Session = Scenes.WizardSession<Scenes.WizardSessionData> & {
+  selection: Selection,
+}
+
 export type HelpUAContext = Context & {
-  session: {
-    selection: Selection;
-  };
+  session: Session
+  scene: Scenes.SceneContextScene<HelpUAContext, Scenes.WizardSessionData>
+  wizard: Scenes.WizardContextWizard<HelpUAContext>
 };
 
 

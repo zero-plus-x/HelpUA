@@ -1,4 +1,4 @@
-import { Scenes, Telegraf } from 'telegraf';
+import { Composer, Scenes, Telegraf } from 'telegraf';
 import { HelpUAContext, Selection } from './shared/types';
 import { createMatch, createOffer, createRequest, register } from '../db';
 import { isCategory, isRole, isUILanguage } from '../translations';
@@ -71,18 +71,19 @@ export const initListeners = (bot: Telegraf<HelpUAContext>) => {
     const { text, extra } = getStartReply(uiLanguage)
     ctx.reply(text, extra);
   });
-  const scene = new Scenes.WizardScene('REQUEST_OR_ORDER_CREATION',
-    (ctx) => {
+
+  const scene = new Scenes.WizardScene<HelpUAContext>('REQUEST_OR_ORDER_CREATION',
+    async (ctx) => {
       ctx.reply('test')
       ctx.wizard.next()
     },
-    (ctx) => {
+    async (ctx) => {
       return ctx.scene.leave()
     }
   )
 
-  const stage = new Stage([scene])
-  // bot.use(stage.middleware());
+  const stage = new Stage<HelpUAContext>([scene])
+  bot.use(stage.middleware());
   bot.action(/role:(.*)/, ctx => {
     if (!ctx || !ctx.chat) return;
 
