@@ -7,12 +7,6 @@ generator client {
   provider = "prisma-client-js"
 }
 
-enum UILanguage {
-  ENGLISH
-  RUSSIAN
-  UKRAINIAN
-}
-
 enum SpokenLanguage {
   ENGLISH
   RUSSIAN
@@ -24,19 +18,14 @@ enum SpokenLanguage {
 }
 
 enum Category {
-  URGENT_CARE
-  TRANSPORTATION
   LOCAL_INFORMATION
-  ACCOMODATION
-  MEDICAL_HELP
+  TEXT_TRANSLATION
 }
 
 model User {
   id               Int        @id @default(autoincrement())
   telegramUserId   Int        @unique
-  telegramUsername String?
   chatId           Int
-  uiLanguage       UILanguage
   offers           Offer[]
   requests         Request[]
 }

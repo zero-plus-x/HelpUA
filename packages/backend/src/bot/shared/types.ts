@@ -1,20 +1,24 @@
-import {Category, UILanguage} from '@prisma/client';
-import { Context } from 'telegraf';
-import {Role} from '../../types';
+import {Category} from '@prisma/client';
+import { Context, Scenes } from 'telegraf';
+import {Role, UILanguage} from '../../types';
 
 export type Selection = {
-  uiLanguage: UILanguage | null;
+  uiLanguage: UILanguage;
   role: Role | null;
   category: Category | null;
 };
 
-export type Session = {
-  session: {
-    selection: Selection;
-  };
+
+type Session = Scenes.WizardSession<Scenes.WizardSessionData> & {
+  selection: Selection,
+}
+
+export type HelpUAContext = Context & {
+  session: Session
+  scene: Scenes.SceneContextScene<HelpUAContext, Scenes.WizardSessionData>
+  wizard: Scenes.WizardContextWizard<HelpUAContext>
 };
 
-export type HelpUAContext = Context & Session;
 
 export type Answer = {
   key: string;

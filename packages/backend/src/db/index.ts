@@ -1,9 +1,8 @@
 import { PrismaClient, User } from '@prisma/client';
-import { UILanguage } from '@prisma/client';
 import { Answer, Selection } from '../bot/shared/types';
 import {ValidationError} from '../error';
 import { CategoryTranslations, RoleTranslations, UILanguageLabels } from '../translations';
-import {Candidates} from "../types"
+import {Candidates, UILanguage} from "../types"
 
 export const prisma = new PrismaClient();
 
@@ -11,11 +10,11 @@ export const getUser = async (telegramUserId: number) => {
   return await prisma.user.findUnique({ where: { telegramUserId } })
 }
 
-export const register = async ({ telegramUserId, chatId, uiLanguage, telegramUsername}: Omit<User, 'id'>): Promise<User> => {
+export const register = async ({ telegramUserId, chatId}: Omit<User, 'id'>): Promise<User> => {
   const user = await prisma.user.upsert({
     where: { telegramUserId },
-    update: { chatId, uiLanguage, telegramUsername },
-    create: { chatId, telegramUserId, uiLanguage, telegramUsername },
+    update: { chatId },
+    create: { chatId, telegramUserId },
   });
 
   return user
