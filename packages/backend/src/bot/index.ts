@@ -112,7 +112,6 @@ export const initListeners = (bot: Telegraf<HelpUAContext>) => {
   bot.action(/role:(.*)/, ctx => {
     if (!ctx || !ctx.chat) return;
 
-    // const uiLanguage = ctx.session.selection.uiLanguage;
     const role = ctx.match[1];
 
     if (!role || !ctx.session.selection || !isRole(role)) {
@@ -120,38 +119,9 @@ export const initListeners = (bot: Telegraf<HelpUAContext>) => {
     }
 
     ctx.session.selection.role = role;
-
     ctx.scene.enter(REQUEST_OR_ORDER_CREATION)
-    // const { text, extra } = getSelectCategoryReply(uiLanguage)
-    // ctx.reply(text, extra);
   });
 
-  bot.action(/help-type:(.*)/, async ctx => {
-    if (!ctx || !ctx.chat) return;
-
-    const category = ctx.match[1];
-
-    const uiLanguage = ctx.session.selection.uiLanguage;
-
-    if (!category || !ctx.session.selection || !isCategory(category) || !uiLanguage) {
-      throw new ValidationError("Validation failed on help-type")
-    }
-
-    ctx.session.selection.category = category;
-
-    const telegramUserId = ctx.update.callback_query.from.id
-    if (ctx.session.selection.role === Role.HELPER) {
-      await createOffer(telegramUserId, ctx.session.selection)
-
-      const { text, extra } = getOfferCreatedReply(uiLanguage)
-      ctx.reply(text, extra)
-    } else {
-      await createRequest(telegramUserId, ctx.session.selection)
-
-      const { text, extra } = getRequestCreatedReply(uiLanguage)
-      ctx.reply(text, extra)
-    }
-  });
 
 
   bot.action(/match:(.*):(.*)/, async ctx => {
