@@ -1,18 +1,17 @@
 import { Scenes, Telegraf } from 'telegraf';
 import { HelpUAContext, Selection } from './shared/types';
-import { createMatch, createOffer, createRequest, register } from '../db';
-import { isCategory, isRole, isUILanguage } from '../translations';
-import { getNoUserNameErrorReply, getOfferCreatedReply, getRequestCreatedReply, getSelectCategoryReply, getSelectLanguageReply, getStartReply } from './replies';
-import {Role, UILanguage} from '../types';
+import { createMatch, register } from '../db';
+import { isUILanguage } from '../translations';
+import { getNoUserNameErrorReply, getSelectLanguageReply, getStartReply } from './replies';
+import {UILanguage} from '../types';
 import {ValidationError} from '../error';
+import {requestOrOrderCreationScene, REQUEST_OR_ORDER_CREATION} from './wizards/request-or-order-creation';
 
 const initialSelection: Selection = {
   uiLanguage: UILanguage.ENGLISH,
   role: null,
   category: null
 };
-
-const REQUEST_OR_ORDER_CREATION = 'REQUEST_OR_ORDER_CREATION'
 
 const getRestartMessage = () => {
   return 'Cannot process response, try /start again';
@@ -73,56 +72,9 @@ export const initListeners = (bot: Telegraf<HelpUAContext>) => {
     ctx.reply(text, extra);
   });
 
-  const scene = new Scenes.WizardScene<HelpUAContext>(REQUEST_OR_ORDER_CREATION,
-    async (ctx) => {
-      const uiLanguage = ctx.session.selection.uiLanguage;
-      const { text, extra } = getSelectCategoryReply(uiLanguage)
-      ctx.reply(text, extra);
-      ctx.wizard.next()
-    },
-    async (ctx: HelpUAContext) => {
-      const category = (ctx.callbackQuery as any)?.data // https://github.com/telegraf/telegraf/issues/1471
-      if (category == null || !isCategory(category)) {
-        return new ValidationError('Wrong category')
-      }
-      const uiLanguage = ctx.session.selection.uiLanguage;
-      ctx.session.selection.category = category // @TODO use wizard context
-
-      const telegramUserId = ctx.callbackQuery?.from.id
-      if (telegramUserId == null) {
-        return new ValidationError('no telegramUsrId')
-      }
-      if (ctx.session.selection.role === Role.HELPER) {
-        await createOffer(telegramUserId, ctx.session.selection)
-
-        const { text, extra } = getOfferCreatedReply(uiLanguage)
-        ctx.reply(text, extra)
-      } else {
-        await createRequest(telegramUserId, ctx.session.selection)
-
-        const { text, extra } = getRequestCreatedReply(uiLanguage)
-        ctx.reply(text, extra)
-      }
-      return ctx.scene.leave()
-    }
-  )
-
-  const stage = new Scenes.Stage<HelpUAContext>([scene])
+  const stage = new Scenes.Stage<HelpUAContext>([requestOrOrderCreationScene])
   bot.use(stage.middleware());
-  bot.action(/role:(.*)/, ctx => {
-    if (!ctx || !ctx.chat) return;
-
-    const role = ctx.match[1];
-
-    if (!role || !ctx.session.selection || !isRole(role)) {
-      throw new ValidationError(`Validation failed on role ${role}`)
-    }
-
-    ctx.session.selection.role = role;
-    ctx.scene.enter(REQUEST_OR_ORDER_CREATION)
-  });
-
-
+  bot.action(/role:(.*)/, Scenes.Stage.enter<HelpUAContext>(REQUEST_OR_ORDER_CREATION))
 
   bot.action(/match:(.*):(.*)/, async ctx => {
     if (!ctx || !ctx.chat) return;
